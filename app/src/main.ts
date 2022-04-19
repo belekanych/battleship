@@ -3,6 +3,7 @@ import App from './App.vue'
 import router from './router'
 import './index.css'
 
-createApp(App)
+const app = createApp(App)
   .use(router)
-  .mount('#app')
+
+router.isReady().then(app.mount('#app'))
