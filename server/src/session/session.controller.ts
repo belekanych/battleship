@@ -19,4 +19,9 @@ export class SessionController {
   join(@Param('id') id: string) {
     return this.sessionService.join(+id)
   }
+
+  @Get('/:id/join/qr-code')
+  async getJoinQrCode(@Param('id') id: string): Promise<string> {
+    return await this.sessionService.getJoinQrCode(+id)
+  }
 }

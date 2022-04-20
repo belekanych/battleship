@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common'
 import { Player } from './entities/player.entity'
 import { Session } from './entities/session.entity'
 import { User } from './entities/user.entity'
+import * as QRCode from 'qrcode'
 
 @Injectable()
 export class SessionService {
@@ -17,6 +18,12 @@ export class SessionService {
 
   findAll() {
     return this.sessions
+  }
+
+  async getJoinQrCode(id: number): Promise<string> {
+    const url = `http://192.168.0.105:3000/sessions/${id}/join`
+
+    return await QRCode.toDataURL(url)
   }
 
   join(id: number) {
