@@ -1,11 +1,21 @@
 <script setup lang="ts">
 import { useRouter } from 'vue-router'
+import { sessions as api } from '../../api/sessions'
 
+// Router
 const router = useRouter()
 
-const sessionId = Math.ceil(Math.random()*10000)
+// Methods
+async function create() {
+  try {
+    const { data: session } = await api.create()
+    router.push({ name: 'sessions.show', params: { sessionId: session.id } })
+  } catch (e) {
+    console.error(e)
+  }
+}
 
-router.push({ name: 'sessions.show', params: { sessionId } })
+create()
 </script>
 
 <template>
