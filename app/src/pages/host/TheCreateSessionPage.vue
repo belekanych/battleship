@@ -9,7 +9,7 @@ const router = useRouter()
 async function create() {
   try {
     const { data: session } = await api.create()
-    router.push({ name: 'sessions.show', params: { sessionId: session.id } })
+    router.push({ name: 'host.sessions.show', params: { sessionId: session.id } })
   } catch (e) {
     console.error(e)
   }

@@ -3,6 +3,9 @@ import { ref, computed } from 'vue'
 import type { Ref } from 'vue'
 import TheMainLayout from '../../layouts/TheMainLayout.vue'
 import { useRouter } from 'vue-router'
+import { sessions as api } from '../../api/sessions'
+import User from '../../models/User'
+import Player from '../../models/Player'
 
 // Router
 const router = useRouter()
@@ -19,12 +22,23 @@ const name: Ref<string> = ref('');
 const isValid = computed<boolean>(() => !!name.value.length)
 
 // Methods
-function onSubmit (): void {
+async function join(): Promise<void>
+{
+  const { data } = await api.join(props.sessionId, name.value)
+  const player = new Player(
+    new User(data.user.name),
+    data.field
+  )
+  console.log(player)
+  router.push({ name: 'client.sessions.setup', params: { sessionId: props.sessionId } })
+}
+
+async function onSubmit (): Promise<void> {
   if (!isValid) {
     return
   }
 
-  router.push({ name: 'sessions.setup', params: { sessionId: props.sessionId } })
+  return await join()
 }
 </script>
 

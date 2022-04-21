@@ -4,7 +4,7 @@
       Battleship
     </h1>
     <router-link
-      :to="{ name: 'sessions.create' }"
+      :to="{ name: 'host.sessions.create' }"
       class="text-center bg-black text-white font-bold py-4 w-32 rounded-full hover:bg-blue-900 transition"
     >
       Play

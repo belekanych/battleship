@@ -1,9 +1,9 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import TheHomePage from '../pages/TheHomePage.vue'
-import TheCreateSessionPage from '../pages/sessions/TheCreateSessionPage.vue'
-import TheJoinSessionPage from '../pages/sessions/TheJoinSessionPage.vue'
-import TheSetupSessionPage from '../pages/sessions/TheSetupSessionPage.vue'
-import TheShowSessionPage from '../pages/sessions/TheShowSessionPage.vue'
+import TheCreateSessionPage from '../pages/host/TheCreateSessionPage.vue'
+import TheJoinSessionPage from '../pages/client/TheJoinSessionPage.vue'
+import TheShowSessionPage from '../pages/host/TheShowSessionPage.vue'
+import TheSetupSessionPage from '../pages/client/TheSetupSessionPage.vue'
 
 const routes = [
   {
@@ -12,27 +12,26 @@ const routes = [
     component: TheHomePage,
   },
   {
-    path: '/sessions/create',
-    name: 'sessions.create',
+    path: '/host/sessions/create',
+    name: 'host.sessions.create',
     component: TheCreateSessionPage,
   },
   {
-    path: '/sessions/:sessionId',
-    name: 'sessions.show',
+    path: '/host/sessions/:sessionId',
+    name: 'host.sessions.show',
     component: TheShowSessionPage,
     props: true,
   },
   {
-    path: '/sessions/:sessionId/join',
-    name: 'sessions.join',
+    path: '/client/sessions/:sessionId/join',
+    name: 'client.sessions.join',
     component: TheJoinSessionPage,
     props: true,
   },
   {
-    path: '/sessions/:sessionId/setup',
-    name: 'sessions.setup',
+    path: '/client/sessions/setup',
+    name: 'client.sessions.setup',
     component: TheSetupSessionPage,
-    props: true,
   },
 ]
 const router = createRouter({
