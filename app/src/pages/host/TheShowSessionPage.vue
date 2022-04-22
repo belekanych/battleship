@@ -15,7 +15,7 @@ const props = defineProps<{
     <div class="flex">
       <div class="relative">
         <game-field />
-        <div class="absolute top-0 left-0 w-full h-full flex justify-center items-center">
+        <div class="hidden absolute top-0 left-0 w-full h-full flex justify-center items-center">
           <invite
             :session-id="+props.sessionId"
             class="relative top-4 left-4 bg-white p-5"
@@ -24,7 +24,7 @@ const props = defineProps<{
       </div>
       <div class="relative">
         <game-field />
-        <div class="absolute top-0 left-0 w-full h-full flex justify-center items-center">
+        <div class="hidden absolute top-0 left-0 w-full h-full flex justify-center items-center">
           <invite
             :session-id="+props.sessionId"
             class="relative top-4 left-4 bg-white p-5"

@@ -7,12 +7,22 @@ export default defineConfig({
   server: {
     host: true,
     proxy: {
-      "/api": {
-        target: "http://localhost:3001",
+      '/api': {
+        target: 'http://localhost:3001',
         changeOrigin: true,
         secure: false,
         rewrite: (path) => path.replace(/^\/api/, ""),
       },
+      // Proxying websockets or socket.io
+      '/socket.io': {
+        target: 'ws://localhost:3001',
+        ws: true
+      }
     },
   },
+  resolve: {
+    alias: {
+      "xmlhttprequest-ssl": "./node_modules/engine.io-client/lib/xmlhttprequest.js"
+    }
+  }
 })
