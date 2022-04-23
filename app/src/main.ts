@@ -6,4 +6,6 @@ import './index.css'
 const app = createApp(App)
   .use(router)
 
-router.isReady().then(app.mount('#app'))
+router.isReady().then(() => {
+  app.mount('#app')
+})

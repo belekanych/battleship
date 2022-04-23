@@ -1,7 +1,7 @@
 export default class User {
   public name: string = ''
 
-  constructor(name) {
+  constructor(name: string) {
     this.name = name
   }
 }

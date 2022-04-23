@@ -1,7 +1,7 @@
 import { Controller, Get, Post, Body, Param } from '@nestjs/common'
 import { SessionService } from './session.service'
 
-@Controller('/sessions')
+@Controller('/api/sessions')
 export class SessionController {
   constructor(private readonly sessionService: SessionService) {}
 

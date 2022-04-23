@@ -1,4 +1,4 @@
-import { Field } from '../types/Field'
+import Field from '../types/Field'
 import User from './User'
 
 export default class Player {

@@ -24,7 +24,7 @@ const isValid = computed<boolean>(() => !!name.value.length)
 // Methods
 async function join(): Promise<void>
 {
-  const { data } = await api.join(props.sessionId, name.value)
+  const { data } = await api.join(+props.sessionId, name.value)
   const player = new Player(
     new User(data.user.name),
     data.field
