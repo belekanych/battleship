@@ -1,18 +1,19 @@
 <script setup lang="ts">
 import { useRouter } from 'vue-router'
 import { sessions as api } from '../../api/sessions'
+import { useSocketStore } from '../../store/socket'
 
 // Router
 const router = useRouter()
 
+// Store
+const socketStore = useSocketStore()
+
 // Methods
-async function create() {
-  try {
-    const { data: session } = await api.create()
-    router.push({ name: 'host.sessions.show', params: { sessionId: session.id } })
-  } catch (e) {
-    console.error(e)
-  }
+function create() {
+  socketStore.socket.emit('create', null, (sessionId: number) => {
+    router.push({ name: 'host.sessions.show', params: { sessionId } })
+  })
 }
 
 create()

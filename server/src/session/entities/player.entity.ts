@@ -1,12 +1,16 @@
 import { User } from './user.entity'
 import Cell from '../enums/cell.enum'
+import { Socket } from 'socket.io'
 
 export class Player {
-  private user: User
-  private field: Cell[][]
+  public user: User
+  public field: Cell[][]
+  public client: Socket
 
-  constructor(user: User) {
+  constructor(user: User, client: Socket) {
     this.user = user
+    this.client = client
+
     this.field = this.generate(10)
   }
 

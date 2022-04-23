@@ -3,13 +3,14 @@ import { Player } from './entities/player.entity'
 import { Session } from './entities/session.entity'
 import { User } from './entities/user.entity'
 import * as QRCode from 'qrcode'
+import { Socket } from 'socket.io'
 
 @Injectable()
 export class SessionService {
   private sessions: Session[] = []
 
-  create() {
-    const session = new Session(Math.floor(Math.random()*10000))
+  create(host: Socket) {
+    const session = new Session(host)
 
     this.sessions.push(session)
 
@@ -20,20 +21,20 @@ export class SessionService {
     return this.sessions
   }
 
+  find(sessionId: number): Session {
+    return this.sessions.find(session => session.id === sessionId)
+  }
+
   async getJoinQrCode(id: number): Promise<string> {
-    const url = `http://192.168.0.105:3000/sessions/${id}/join`
+    const url = `http://192.168.0.105:3000/client/sessions/${id}/join`
 
     return await QRCode.toDataURL(url)
   }
 
-  join(id: number) {
-    const session = this.sessions.find(session => session.id === id)
+  join(sessionId: number, name: string, client: Socket): Player {
+    const session = this.find(sessionId)
 
-    if (!session) {
-      return
-    }
-
-    const player = new Player(new User('Test'))
+    const player = new Player(new User(name), client)
 
     session.addPlayer(player)
 

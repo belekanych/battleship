@@ -3,12 +3,17 @@ import { ref, computed } from 'vue'
 import type { Ref } from 'vue'
 import TheMainLayout from '../../layouts/TheMainLayout.vue'
 import { useRouter } from 'vue-router'
-import { sessions as api } from '../../api/sessions'
-import User from '../../models/User'
+import { useSocketStore } from '../../store/socket'
+import { useSessionStore } from '../../store/session'
 import Player from '../../models/Player'
+import User from '../../models/User'
 
 // Router
 const router = useRouter()
+
+// Store
+const socketStore = useSocketStore()
+const sessionStore = useSessionStore()
 
 // Props
 const props = defineProps<{
@@ -24,13 +29,26 @@ const isValid = computed<boolean>(() => !!name.value.length)
 // Methods
 async function join(): Promise<void>
 {
-  const { data } = await api.join(+props.sessionId, name.value)
-  const player = new Player(
-    new User(data.user.name),
-    data.field
-  )
-  console.log(player)
-  router.push({ name: 'client.sessions.setup', params: { sessionId: props.sessionId } })
+  return new Promise(resolve => {
+    const sessionId: number = +props.sessionId
+
+    socketStore.socket.on('joined', data => {
+      sessionStore.sessionId = sessionId
+      sessionStore.player = new Player(
+        new User(data.player.user.name),
+        data.player.field
+      )
+
+      router.push({ name: 'client.sessions.setup' })
+
+      resolve()
+    })
+
+    socketStore.socket.emit('join', {
+      sessionId,
+      name: name.value,
+    })
+  })
 }
 
 async function onSubmit (): Promise<void> {

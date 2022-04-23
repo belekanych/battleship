@@ -1,11 +1,14 @@
 import { Player } from './player.entity'
+import { Socket } from 'socket.io'
 
 export class Session {
   public id: number
   private players: Player[] = []
+  public host: Socket
 
-  constructor(id: number) {
-    this.id = id
+  constructor(host: Socket) {
+    this.id = Math.floor(Math.random()*10000)
+    this.host = host
   }
 
   addPlayer(player: Player) {
