@@ -26,7 +26,7 @@ export class SessionService {
   }
 
   async getJoinQrCode(id: number): Promise<string> {
-    const url = `http://192.168.0.105:3000/client/sessions/${id}/join`
+    const url = `http://${process.env.DOMAIN}:${process.env.PORT}/client/sessions/${id}/join`
 
     return await QRCode.toDataURL(url)
   }
