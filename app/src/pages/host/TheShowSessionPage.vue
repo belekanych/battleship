@@ -1,46 +1,30 @@
 <script setup lang="ts">
 import TheMainLayout from '../../layouts/TheMainLayout.vue'
-import Invite from '../../components/host/show/invite/Invite.vue'
+import Invite from '../../components/host/show/Invite.vue'
 import SetupField from '../../components/sessions/Fields/SetupField.vue'
 import { useSocketStore } from '../../store/socket';
+import { useSessionStore } from '../../store/session';
 import { ref, computed } from 'vue'
 import type { Ref } from 'vue'
 import Field from '../../types/Field';
 import Cell from '../../enums/Cell'
 import FieldRow from '../../types/FieldRow'
+import Player from '../../models/Player'
+import User from '../../models/User'
+import PlayerState from '../../components/host/show/PlayerState.vue'
 
 // Store
 const socketStore = useSocketStore()
+const sessionStore = useSessionStore()
 
 // Props
 const props = defineProps<{
   sessionId: String,
 }>()
 
-// Data
-const players: Ref<string[]> = ref([])
-const field: Ref<Field> = ref([])
-
 // Computed
-const firstPlayer = computed(() => {
-  return players.value.length ? players.value[0] : null
-})
-const secondPlayer = computed(() => {
-  return players.value.length > 1 ? players.value[1] : null
-})
-
-// Methods
-function setupSockets() {
-  socketStore.socket.on('joined', data => {
-    players.value.push(data.player.user.name)
-  })
-
-  socketStore.socket.on('setup', data => {
-    field.value = data
-  })
-}
-
-const generateField = (size: number): Field => {
+const defaultField = computed<Field>(() => {
+  const size = 10
   const field: Field = []
 
   for (let i: number = 0; i < size; i++) {
@@ -52,41 +36,52 @@ const generateField = (size: number): Field => {
   }
 
   return field
+})
+
+// Methods
+function setupStore() {
+  sessionStore.session.id = +props.sessionId
+}
+function setupSockets() {
+  socketStore.socket.on('joined', data => {
+    sessionStore.session.addPlayer(
+      new Player(
+        new User(data.user.name),
+        data.field
+      )
+    )
+  })
+
+  socketStore.socket.on('setup', session => {
+    session.players.forEach((item: Object, index: number) => {
+      const player: Player = sessionStore.session.players[index]
+      player.field = item.field
+      player.setState(item.state)
+    })
+  })
 }
 
+setupStore()
 setupSockets()
-field.value = generateField(10)
 </script>
 
 <template>
   <the-main-layout>
     Session: {{ props.sessionId }}
     <div class="flex">
-      <div class="relative">
-        <setup-field :field="field" />
-        <div
-          v-if="!firstPlayer"
-          class="absolute top-0 left-0 w-full h-full flex justify-center items-center"
-        >
+      <div
+        v-for="index in 2"
+        :key="index"
+        class="relative"
+      >
+        <setup-field :field="sessionStore.session.players[index - 1]?.field || defaultField" />
+        <div class="absolute top-0 left-0 w-full h-full flex justify-center items-center">
           <invite
             :session-id="+props.sessionId"
             class="relative top-4 left-4 bg-white p-5"
           />
         </div>
-        <span>{{ firstPlayer }}</span>
-      </div>
-      <div class="relative">
-        <setup-field :field="field" />
-        <div
-          v-if="!secondPlayer"
-          class="absolute top-0 left-0 w-full h-full flex justify-center items-center"
-        >
-          <invite
-            :session-id="+props.sessionId"
-            class="relative top-4 left-4 bg-white p-5"
-          />
-        </div>
-        <span>{{ secondPlayer }}</span>
+        <player-state :player="sessionStore.session.players[index - 1]" />
       </div>
     </div>
   </the-main-layout>

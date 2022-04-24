@@ -1,10 +1,10 @@
 import Player from './Player'
 
 export default class Session {
-  public sessionId: number
+  public id: number = null
   public players: Player[] = []
 
-  constructor(sessionId: number) {
-    this.sessionId = sessionId
+  public addPlayer(player: Player) {
+    this.players.push(player)
   }
 }

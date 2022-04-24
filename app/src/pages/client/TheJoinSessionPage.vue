@@ -32,11 +32,13 @@ async function join(): Promise<void>
   return new Promise(resolve => {
     const sessionId: number = +props.sessionId
 
-    socketStore.socket.on('joined', data => {
-      sessionStore.sessionId = sessionId
-      sessionStore.player = new Player(
-        new User(data.player.user.name),
-        data.player.field
+    socketStore.socket.on('joined', player => {
+      sessionStore.session.id = sessionId
+      sessionStore.session.addPlayer(
+        new Player(
+          new User(player.user.name),
+          player.field
+        )
       )
 
       router.push({ name: 'client.sessions.setup' })

@@ -4,6 +4,7 @@ import TheCreateSessionPage from '../pages/host/TheCreateSessionPage.vue'
 import TheJoinSessionPage from '../pages/client/TheJoinSessionPage.vue'
 import TheShowSessionPage from '../pages/host/TheShowSessionPage.vue'
 import TheSetupSessionPage from '../pages/client/TheSetupSessionPage.vue'
+import TheGameSessionPage from '../pages/client/TheGameSessionPage.vue'
 
 const routes = [
   {
@@ -32,6 +33,11 @@ const routes = [
     path: '/client/sessions/setup',
     name: 'client.sessions.setup',
     component: TheSetupSessionPage,
+  },
+  {
+    path: '/client/sessions/game',
+    name: 'client.sessions.game',
+    component: TheGameSessionPage,
   },
 ]
 const router = createRouter({

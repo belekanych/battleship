@@ -1,9 +1,10 @@
 import { Player } from './player.entity'
 import { Socket } from 'socket.io'
+import PlayerState from '../enums/playerstate.enum'
 
 export class Session {
   public id: number
-  private players: Player[] = []
+  public players: Player[] = []
   public host: Socket
 
   constructor(host: Socket) {
@@ -17,5 +18,9 @@ export class Session {
     }
 
     this.players.push(player)
+  }
+
+  isReady(): boolean {
+    return this.players.filter(player => player.state === PlayerState.READY).length === 2
   }
 }

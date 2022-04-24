@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { sessions as api } from '../../../../api/sessions'
+import { sessions as api } from '../../../api/sessions'
 import type { Ref } from 'vue'
 import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
