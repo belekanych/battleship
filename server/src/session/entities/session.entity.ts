@@ -21,6 +21,6 @@ export class Session {
   }
 
   isReady(): boolean {
-    return this.players.filter(player => player.state === PlayerState.READY).length === 2
+    return this.players.filter(player => player.state !== PlayerState.JOINED).length === 2
   }
 }

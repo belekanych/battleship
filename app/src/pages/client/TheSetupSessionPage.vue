@@ -46,7 +46,7 @@ function setupSockets(): void {
       new User(enemy.user.name),
       enemy.field
     )
-    player.setState(PlayerState.READY)
+    player.setState(enemy.state)
 
     sessionStore.session.addPlayer(player)
 

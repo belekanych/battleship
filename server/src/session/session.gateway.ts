@@ -39,17 +39,32 @@ export class SessionGateway {
     host.emit('setup', new SessionResource(session).transform())
 
     if (session.isReady()) {
-      host.emit('ready')
-
-      session.players[0].client.emit(
-        'ready',
-        new PlayerResource(session.players[1]).transform()
-      )
-
-      session.players[1].client.emit(
-        'ready',
-        new PlayerResource(session.players[0]).transform()
-      )
+      this.sendUpdates(session, 'ready')
     }
+  }
+
+  @SubscribeMessage('guess')
+  guess(@ConnectedSocket() client: Socket, @MessageBody() data): void {
+    this.sendUpdates(
+      this.sessionService.guess(client, +data.row, +data.col),
+      'guess'
+    )
+  }
+
+  private sendUpdates(session: Session, event: string): void
+  {
+    const sessionResource = new SessionResource(session).transform()
+
+    session.host.emit(event, sessionResource)
+
+    session.players[0].client.emit(
+      event,
+      sessionResource['players'][1]
+    )
+
+    session.players[1].client.emit(
+      event,
+      sessionResource['players'][0]
+    )
   }
 }

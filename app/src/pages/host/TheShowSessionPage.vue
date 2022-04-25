@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import TheMainLayout from '../../layouts/TheMainLayout.vue'
 import Invite from '../../components/host/show/Invite.vue'
-import SetupField from '../../components/sessions/Fields/SetupField.vue'
+import GameField from '../../components/sessions/Fields/GameField.vue'
 import { useSocketStore } from '../../store/socket';
 import { useSessionStore } from '../../store/session';
 import { ref, computed } from 'vue'
@@ -43,6 +43,7 @@ function setupStore() {
   sessionStore.session.id = +props.sessionId
 }
 function setupSockets() {
+  // Joined
   socketStore.socket.on('joined', data => {
     sessionStore.session.addPlayer(
       new Player(
@@ -52,7 +53,17 @@ function setupSockets() {
     )
   })
 
+  // Setup
   socketStore.socket.on('setup', session => {
+    session.players.forEach((item: Object, index: number) => {
+      const player: Player = sessionStore.session.players[index]
+      player.field = item.field
+      player.setState(item.state)
+    })
+  })
+
+  // Guess
+  socketStore.socket.on('guess', session => {
     session.players.forEach((item: Object, index: number) => {
       const player: Player = sessionStore.session.players[index]
       player.field = item.field
@@ -74,8 +85,11 @@ setupSockets()
         :key="index"
         class="relative"
       >
-        <setup-field :field="sessionStore.session.players[index - 1]?.field || defaultField" />
-        <div class="absolute top-0 left-0 w-full h-full flex justify-center items-center">
+        <game-field :field="sessionStore.session.players[index - 1]?.field || defaultField" />
+        <div
+          v-if="!sessionStore.session.isReady()"
+          class="absolute top-0 left-0 w-full h-full flex justify-center items-center"
+        >
           <invite
             :session-id="+props.sessionId"
             class="relative top-4 left-4 bg-white p-5"

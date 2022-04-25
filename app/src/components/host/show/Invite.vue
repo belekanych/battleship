@@ -32,7 +32,10 @@ loadQrCode()
 </script>
 
 <template>
-  <a :href="inviteLink">
+  <a
+    :href="inviteLink"
+    target="_blank"
+  >
     <img :src="inviteQRCode" />
   </a>
 </template>

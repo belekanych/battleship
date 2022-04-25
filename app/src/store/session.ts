@@ -7,5 +7,9 @@ export const useSessionStore = defineStore('session', {
     return {
       session: new Session()
     }
-  }
+  },
+  getters: {
+    player: ({ session }): Player => session.players[0],
+    enemy: ({ session }): Player => session.players[1],
+  },
 })

@@ -50,6 +50,26 @@ export class SessionService {
     player.field = field
     player.setState(PlayerState.READY)
 
+    if (session.isReady()) {
+      session.players[0].setState(PlayerState.MOVE)
+      session.players[1].setState(PlayerState.WAITING)
+    }
+
+    return session
+  }
+
+  public guess(client: Socket, row: number, col: number): Session {
+    const session = this.findClientSession(client)
+    const playerIndex = this.findClientPlayerIndex(session, client)
+    const enemyIndex = playerIndex === 0 ? 1 : 0
+
+    const enemy = session.players[enemyIndex]
+    enemy.field[row][col] = enemy.field[row][col] === Cell.SHIP ? Cell.HIT : Cell.MISS
+    enemy.setState(PlayerState.MOVE)
+
+    const player = session.players[playerIndex]
+    player.setState(PlayerState.WAITING)
+
     return session
   }
 
