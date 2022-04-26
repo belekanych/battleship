@@ -59,13 +59,20 @@ function onCellClick(row: number, col: number) {
         class="border transition"
         @click="onCellClick(rowIndex, colIndex)"
       >
-        <div
-          v-if="isMiss(cell) || isHit(cell)"
-          class="w-full h-full text-center"
-          :class="{'text-gray-900': isMiss(cell), 'text-white': isHit(cell) }"
+        <slot
+          name="cell"
+          :row="rowIndex"
+          :col="colIndex"
+          :cell="cell"
         >
-          x
-        </div>
+          <div
+            v-if="isMiss(cell) || isHit(cell)"
+            class="w-full h-full text-center"
+            :class="{'text-gray-900': isMiss(cell), 'text-white': isHit(cell) }"
+          >
+            x
+          </div>
+        </slot>
       </td>
     </tr>
   </table>
