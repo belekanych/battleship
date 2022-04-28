@@ -1,5 +1,6 @@
-import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
+import { defineConfig } from 'vite'
+import { resolve } from 'path'
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -15,13 +16,15 @@ export default defineConfig({
       // Proxying websockets or socket.io
       '/socket.io': {
         target: 'ws://localhost:3001',
-        ws: true
-      }
+        ws: true,
+      },
     },
   },
   resolve: {
     alias: {
-      "xmlhttprequest-ssl": "./node_modules/engine.io-client/lib/xmlhttprequest.js"
-    }
-  }
+      '@': resolve(__dirname, 'src'),
+      'xmlhttprequest-ssl':
+        './node_modules/engine.io-client/lib/xmlhttprequest.js',
+    },
+  },
 })

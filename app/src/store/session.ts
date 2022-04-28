@@ -1,11 +1,11 @@
+import Player from '@/models/Player'
+import Session from '@/models/Session'
 import { defineStore } from 'pinia'
-import Player from '../models/Player'
-import Session from '../models/Session'
 
 export const useSessionStore = defineStore('session', {
   state: () => {
     return {
-      session: new Session()
+      session: new Session({ id: 0, players: [] }),
     }
   },
   getters: {

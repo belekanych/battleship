@@ -8,4 +8,5 @@ module.exports = {
   trailingComma: 'es5',
   bracketSpacing: true,
   allowParens: 'always',
+  vueIndentScriptAndStyle: true,
 }

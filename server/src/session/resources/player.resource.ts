@@ -1,5 +1,6 @@
-import { Player } from '../entities/player.entity'
+import PlayerPayload from './playerPayload.resource'
 import UserResource from './user.resource'
+import { Player } from '../entities/player.entity'
 
 export default class PlayerResource {
   private resource: Player
@@ -10,8 +11,9 @@ export default class PlayerResource {
 
   public transform(): Object {
     return {
+      id: this.resource.id,
       user: new UserResource(this.resource.user).transform(),
-      field: this.resource.field,
+      payload: new PlayerPayload(this.resource.payload).transform(),
       state: this.resource.state,
     }
   }

@@ -1,16 +1,25 @@
 import Field from '../types/Field'
-import User from './User'
+import PlayerPayload from './PlayerPayload'
 import PlayerState from '../enums/PlayerState'
+import Props from '../types/Player'
+import User from './User'
 
 export default class Player {
+  public id: number
+  public payload: PlayerPayload
+  public state: PlayerState = PlayerState.JOINED
   public user: User
-  public field: Field
-  public state: PlayerState
 
-  constructor(user: User, field: Field) {
-    this.user = user
-    this.field = field
+  constructor({ id, user, payload }: Props) {
+    this.id = id
+    this.user = new User(user)
+    this.payload = new PlayerPayload(payload)
+
     this.setState(PlayerState.JOINED)
+  }
+
+  public setPayload(payload: PlayerPayload) {
+    this.payload = payload
   }
 
   public setState(state: PlayerState): void {

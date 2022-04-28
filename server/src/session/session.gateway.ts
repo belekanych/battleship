@@ -1,4 +1,4 @@
-import { ConnectedSocket, MessageBody, SubscribeMessage, WebSocketGateway, WebSocketServer, WsResponse } from '@nestjs/websockets'
+import { ConnectedSocket, MessageBody, SubscribeMessage, WebSocketGateway } from '@nestjs/websockets'
 import { Socket } from 'socket.io'
 import { SessionService } from './session.service'
 import { Session } from './entities/session.entity'
@@ -9,9 +9,6 @@ import Cell from './enums/cell.enum'
 
 @WebSocketGateway({ cors: true })
 export class SessionGateway {
-  @WebSocketServer()
-  server
-
   constructor(private readonly sessionService: SessionService) {}
 
   @SubscribeMessage('create')

@@ -1,11 +1,11 @@
+import * as QRCode from 'qrcode'
+import Cell from './enums/cell.enum'
+import PlayerState from './enums/playerstate.enum'
 import { Injectable } from '@nestjs/common'
 import { Player } from './entities/player.entity'
 import { Session } from './entities/session.entity'
-import { User } from './entities/user.entity'
-import * as QRCode from 'qrcode'
 import { Socket } from 'socket.io'
-import Cell from './enums/cell.enum'
-import PlayerState from './enums/playerstate.enum'
+import { User } from './entities/user.entity'
 
 @Injectable()
 export class SessionService {
@@ -47,7 +47,7 @@ export class SessionService {
     const session = this.findClientSession(client)
 
     const player = session.players[this.findClientPlayerIndex(session, client)]
-    player.field = field
+    player.payload.field = field
     player.setState(PlayerState.READY)
 
     if (session.isReady()) {
@@ -64,7 +64,7 @@ export class SessionService {
     const enemyIndex = playerIndex === 0 ? 1 : 0
 
     const enemy = session.players[enemyIndex]
-    enemy.field[row][col] = enemy.field[row][col] === Cell.SHIP ? Cell.HIT : Cell.MISS
+    enemy.payload.field[row][col] = enemy.payload.field[row][col] === Cell.SHIP ? Cell.HIT : Cell.MISS
     enemy.setState(PlayerState.MOVE)
 
     const player = session.players[playerIndex]

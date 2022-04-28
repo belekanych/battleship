@@ -10,5 +10,5 @@ export const useSocketStore = defineStore('socket', {
     return {
       socket: io(`${scheme}://${domain}:${port}`),
     }
-  }
+  },
 })

@@ -1,34 +1,26 @@
 import { User } from './user.entity'
-import Cell from '../enums/cell.enum'
 import PlayerState from '../enums/playerstate.enum'
 import { Socket } from 'socket.io'
+import { PlayerPayload } from './playerPayload.entity'
 
 export class Player {
+  public id: number
   public user: User
-  public field: Cell[][]
   public client: Socket
   public state: PlayerState
+  public payload: PlayerPayload
 
   constructor(user: User, client: Socket) {
     this.user = user
     this.client = client
 
-    this.field = this.generate(10)
+    this.id = this.generateId()
+    this.payload = new PlayerPayload()
     this.setState(PlayerState.JOINED)
   }
 
-  private generate(size: number): Cell[][] {
-    const field: Cell[][] = [];
-
-    for (let rowIndex = 0; rowIndex < size; rowIndex++) {
-      const row = []
-      for (let colIndex = 0; colIndex < size; colIndex++) {
-        row.push(Cell.EMPTY)
-      }
-      field.push(row)
-    }
-
-    return field
+  private generateId(): number {
+    return parseInt(Math.ceil(Math.random() * Date.now()).toPrecision(6).toString().replace(".", ""))
   }
 
   public setState(state: PlayerState) {

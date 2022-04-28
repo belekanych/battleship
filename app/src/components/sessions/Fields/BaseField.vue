@@ -1,36 +1,36 @@
 <script setup lang="ts">
-import Cell from '../../../enums/Cell'
-import Field from '../../../types/Field'
+  import Cell from '../../../enums/Cell'
+  import Field from '../../../types/Field'
 
-// Props
-interface Props {
-  field: Field
-}
-const { field } = defineProps<Props>()
+  // Props
+  interface Props {
+    field: Field
+  }
+  const { field } = defineProps<Props>()
 
-// Emits
-const emit = defineEmits(['cellClick'])
+  // Emits
+  const emit = defineEmits(['cell-click'])
 
-// Methods
-function isShip (cell: Cell): boolean {
-  return cell === Cell.SHIP
-}
+  // Methods
+  function isShip(cell: Cell): boolean {
+    return cell === Cell.SHIP
+  }
 
-function isMiss (cell: Cell): boolean {
-  return cell === Cell.MISS
-}
+  function isMiss(cell: Cell): boolean {
+    return cell === Cell.MISS
+  }
 
-function isHit (cell: Cell): boolean {
-  return cell === Cell.HIT
-}
+  function isHit(cell: Cell): boolean {
+    return cell === Cell.HIT
+  }
 
-function isDestroyed (cell: Cell): boolean {
-  return cell == Cell.DESTROYED
-}
+  function isDestroyed(cell: Cell): boolean {
+    return cell == Cell.DESTROYED
+  }
 
-function onCellClick(row: number, col: number) {
-  emit('cellClick', row, col)
-}
+  function onCellClick(row: number, col: number) {
+    emit('cell-click', row, col)
+  }
 </script>
 
 <template>
@@ -45,30 +45,25 @@ function onCellClick(row: number, col: number) {
         {{ String.fromCharCode('A'.charCodeAt(0) + rowIndex) }}
       </td>
     </tr>
-    <tr
-      v-for="(row, rowIndex) in field"
-      :key="rowIndex"
-    >
+    <tr v-for="(row, rowIndex) in field" :key="rowIndex">
       <td class="text-right font-bold h-8 pr-4">
         <div>{{ rowIndex + 1 }}</div>
       </td>
       <td
         v-for="(cell, colIndex) in row"
         :key="colIndex"
-        :class="{'bg-gray-900 border-gray-900': isShip(cell) || isHit(cell)}"
+        :class="{ 'bg-gray-900 border-gray-900': isShip(cell) || isHit(cell) }"
         class="border transition"
         @click="onCellClick(rowIndex, colIndex)"
       >
-        <slot
-          name="cell"
-          :row="rowIndex"
-          :col="colIndex"
-          :cell="cell"
-        >
+        <slot name="cell" :row="rowIndex" :col="colIndex" :cell="cell">
           <div
             v-if="isMiss(cell) || isHit(cell)"
             class="w-full h-full text-center"
-            :class="{'text-gray-900': isMiss(cell), 'text-white': isHit(cell) }"
+            :class="{
+              'text-gray-900': isMiss(cell),
+              'text-white': isHit(cell),
+            }"
           >
             x
           </div>
