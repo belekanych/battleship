@@ -1,12 +1,12 @@
 <script setup lang="ts">
-  import Player from '../../models/Player'
+  import Player from '@/models/Player'
   import PlayerType from '@/types/Player'
-  import TheMainLayout from '../../layouts/TheMainLayout.vue'
+  import TheMainLayout from '@/layouts/TheMainLayout.vue'
   import type { Ref } from 'vue'
   import { ref, computed } from 'vue'
   import { useRouter } from 'vue-router'
-  import { useSessionStore } from '../../store/session'
-  import { useSocketStore } from '../../store/socket'
+  import { useSessionStore } from '@/store/session'
+  import { useSocketStore } from '@/store/socket'
 
   // Router
   const router = useRouter()
@@ -35,7 +35,7 @@
         sessionStore.session.id = sessionId
         sessionStore.session.addPlayer(new Player(player))
 
-        router.push({ name: 'client.sessions.setup' })
+        router.push({ name: 'sessions.setup' })
 
         resolve()
       })

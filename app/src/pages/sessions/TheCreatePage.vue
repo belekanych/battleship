@@ -1,6 +1,6 @@
 <script setup lang="ts">
   import { useRouter } from 'vue-router'
-  import { useSocketStore } from '../../store/socket'
+  import { useSocketStore } from '@/store/socket'
 
   // Router
   const router = useRouter()
@@ -11,7 +11,7 @@
   // Methods
   function create() {
     socketStore.socket.emit('create', null, (sessionId: number) => {
-      router.push({ name: 'host.sessions.show', params: { sessionId } })
+      router.push({ name: 'sessions.show', params: { sessionId } })
     })
   }
 

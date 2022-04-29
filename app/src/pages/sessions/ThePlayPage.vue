@@ -1,12 +1,12 @@
 <script setup lang="ts">
-  import GameField from '../../components/sessions/Fields/GameField.vue'
+  import GameField from '@/components/sessions/fields/GameField.vue'
   import PlayerPayload from '@/models/PlayerPayload'
-  import PlayerState from '../../enums/PlayerState'
+  import PlayerState from '@/enums/PlayerState'
   import PlayerType from '@/types/Player'
-  import TheMainLayout from '../../layouts/TheMainLayout.vue'
+  import TheMainLayout from '@/layouts/TheMainLayout.vue'
   import { computed } from 'vue'
-  import { useSessionStore } from '../../store/session'
-  import { useSocketStore } from '../../store/socket'
+  import { useSessionStore } from '@/store/session'
+  import { useSocketStore } from '@/store/socket'
 
   // Store
   const sessionStore = useSessionStore()

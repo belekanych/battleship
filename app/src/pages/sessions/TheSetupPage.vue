@@ -1,12 +1,11 @@
 <script setup lang="ts">
-  import Cell from '../../enums/Cell'
-  import Field from '../../types/Field'
-  import Player from '../../models/Player'
-  import PlayerState from '../../enums/PlayerState'
+  import Cell from '@/enums/Cell'
+  import Field from '@/types/Field'
+  import Player from '@/models/Player'
+  import PlayerState from '@/enums/PlayerState'
   import PlayerType from '@/types/Player'
-  import SetupField from '../../components/sessions/Fields/SetupField.vue'
-  import TheMainLayout from '../../layouts/TheMainLayout.vue'
-  import User from '../../models/User'
+  import SetupField from '@/components/sessions/fields/SetupField.vue'
+  import TheMainLayout from '@/layouts/TheMainLayout.vue'
   import { computed } from 'vue'
   import { useRouter } from 'vue-router'
   import { useSessionStore } from '../../store/session'
@@ -48,7 +47,7 @@
 
       sessionStore.session.addPlayer(player)
 
-      router.push({ name: 'client.sessions.game' })
+      router.push({ name: 'sessions.play' })
     })
   }
 
