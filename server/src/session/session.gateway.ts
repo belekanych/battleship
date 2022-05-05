@@ -13,55 +13,57 @@ export class SessionGateway {
 
   @SubscribeMessage('create')
   create(@ConnectedSocket() client: Socket): number {
-    const session: Session = this.sessionService.create(client)
+    const session: Session = this.sessionService.create()
+
+    session.addWatcher(client)
     
     return session.id
   }
 
   @SubscribeMessage('join')
   join(@ConnectedSocket() client: Socket, @MessageBody() data: { sessionId: number, name: string }): void {
-    const player: Player = this.sessionService.join(data.sessionId, data.name, client)
+    const player: Player = this.sessionService.join(data.sessionId, {
+      name: data.name,
+      connectionId: client.id,
+    })
+    client.emit('joined', new PlayerResource(player).transform())
 
-    const playerResource = new PlayerResource(player).transform()
-    player.client.emit('joined', playerResource)
+    const session: Session = this.sessionService.find(data.sessionId)
 
-    const host: Socket = this.sessionService.find(data.sessionId).host
-    host.emit('joined', playerResource)
+    session.addWatcher(client)
+
+    this.notify(
+      session,
+      'updated',
+    )
   }
 
   @SubscribeMessage('setup')
   setup(@ConnectedSocket() client: Socket, @MessageBody() field: Cell[][]): void {
-    const session: Session = this.sessionService.setup(client, field)
-    const host: Socket = session.host
-    host.emit('setup', new SessionResource(session).transform())
+    const session: Session = this.sessionService.setup(client.id, field)
 
-    if (session.isReady()) {
-      this.sendUpdates(session, 'ready')
-    }
+    this.notify(
+      session,
+      'updated',
+    )
   }
 
-  @SubscribeMessage('guess')
+  @SubscribeMessage('move')
   guess(@ConnectedSocket() client: Socket, @MessageBody() data): void {
-    this.sendUpdates(
-      this.sessionService.guess(client, +data.row, +data.col),
-      'guess'
+    const session: Session = this.sessionService.guess(client.id, +data.row, +data.col)
+
+    this.notify(
+      session,
+      'updated',
     )
   }
 
-  private sendUpdates(session: Session, event: string): void
+  private notify(session: Session, event: string): void
   {
-    const sessionResource = new SessionResource(session).transform()
+    const payload = new SessionResource(session).transform()
 
-    session.host.emit(event, sessionResource)
-
-    session.players[0].client.emit(
-      event,
-      sessionResource['players'][1]
-    )
-
-    session.players[1].client.emit(
-      event,
-      sessionResource['players'][0]
-    )
+    session.watchers.forEach((socket: Socket) => {
+      socket.emit(event, payload)
+    })
   }
 }

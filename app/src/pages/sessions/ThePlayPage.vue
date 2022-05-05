@@ -1,8 +1,9 @@
 <script setup lang="ts">
   import GameField from '@/components/sessions/fields/GameField.vue'
-  import PlayerPayload from '@/models/PlayerPayload'
+  import Player from '@/models/Player'
   import PlayerState from '@/enums/PlayerState'
   import PlayerType from '@/types/Player'
+  import SessionType from '@/types/Session'
   import TheMainLayout from '@/layouts/TheMainLayout.vue'
   import { computed } from 'vue'
   import { useSessionStore } from '@/store/session'
@@ -19,22 +20,22 @@
 
   // Methods
   function onCellUpdate(row: number, col: number): void {
-    console.log({ row, col })
     if (sessionStore.enemy.state === PlayerState.MOVE) {
       return
     }
 
-    socketStore.socket.emit('guess', {
+    socketStore.socket.emit('move', {
       row,
       col,
     })
   }
   function setupSockets(): void {
-    socketStore.socket.on('guess', (player: PlayerType) => {
-      sessionStore.session.players[1].setPayload(
-        new PlayerPayload(player.payload)
-      )
-      sessionStore.session.players[1].setState(player.state)
+    socketStore.socket.on('updated', (session: SessionType) => {
+      const players: PlayerType[] = session.players || []
+
+      players.forEach((playerData: PlayerType, index: number) => {
+        sessionStore.session.players[index] = new Player(playerData)
+      })
     })
   }
 

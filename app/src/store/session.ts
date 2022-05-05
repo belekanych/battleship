@@ -6,10 +6,19 @@ export const useSessionStore = defineStore('session', {
   state: () => {
     return {
       session: new Session({ id: 0, players: [] }),
+      playerId: null as number | null,
     }
   },
   getters: {
-    player: ({ session }): Player => session.players[0],
-    enemy: ({ session }): Player => session.players[1],
+    player: (state): Player => {
+      return state.session.players.filter(
+        (player) => player.id === state.playerId
+      )[0]
+    },
+    enemy: (state): Player => {
+      return state.session.players.filter(
+        (player) => player.id !== state.playerId
+      )[0]
+    },
   },
 })

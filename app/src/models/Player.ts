@@ -10,12 +10,12 @@ export default class Player {
   public state: PlayerState = PlayerState.JOINED
   public user: User
 
-  constructor({ id, user, payload }: Props) {
+  constructor({ id, user, payload, state }: Props) {
     this.id = id
     this.user = new User(user)
     this.payload = new PlayerPayload(payload)
 
-    this.setState(PlayerState.JOINED)
+    this.setState(state)
   }
 
   public setPayload(payload: PlayerPayload) {

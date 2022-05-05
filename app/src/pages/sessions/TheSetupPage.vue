@@ -2,8 +2,10 @@
   import Cell from '@/enums/Cell'
   import Field from '@/types/Field'
   import Player from '@/models/Player'
+  import PlayerPayload from '@/models/PlayerPayload'
   import PlayerState from '@/enums/PlayerState'
   import PlayerType from '@/types/Player'
+  import SessionType from '@/types/Session'
   import SetupField from '@/components/sessions/fields/SetupField.vue'
   import TheMainLayout from '@/layouts/TheMainLayout.vue'
   import { computed } from 'vue'
@@ -20,7 +22,7 @@
 
   // Computed
   const player = computed<Player>(() => {
-    return sessionStore.session.players[0]
+    return sessionStore.player
   })
   const field = computed<Field>(() => {
     return player.value.payload.field
@@ -34,20 +36,22 @@
 
   // Methods
   function onCellUpdate(rowIndex: number, colIndex: number, value: Cell): void {
-    sessionStore.session.players[0].payload.field[rowIndex][colIndex] = value
+    sessionStore.player.payload.field[rowIndex][colIndex] = value
   }
   function onSubmit(): void {
     socketStore.socket.emit('setup', field.value)
-    sessionStore.session.players[0].setState(PlayerState.READY)
   }
   function setupSockets(): void {
-    socketStore.socket.on('ready', (enemy: PlayerType) => {
-      const player: Player = new Player(enemy)
-      player.setState(enemy.state)
+    socketStore.socket.on('updated', (session: SessionType) => {
+      const players: PlayerType[] = session.players || []
 
-      sessionStore.session.addPlayer(player)
+      players.forEach((playerData: PlayerType, index: number) => {
+        sessionStore.session.players[index] = new Player(playerData)
+      })
 
-      router.push({ name: 'sessions.play' })
+      if (sessionStore.session.isReady()) {
+        router.push({ name: 'sessions.play' })
+      }
     })
   }
 

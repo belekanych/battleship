@@ -35,6 +35,8 @@
         sessionStore.session.id = sessionId
         sessionStore.session.addPlayer(new Player(player))
 
+        sessionStore.playerId = player.id
+
         router.push({ name: 'sessions.setup' })
 
         resolve()

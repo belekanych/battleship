@@ -5,14 +5,17 @@ import PlayerState from '../enums/playerstate.enum'
 export class Session {
   public id: number
   public players: Player[] = []
-  public host: Socket
+  public watchers: Socket[] = []
 
-  constructor(host: Socket) {
-    this.id = Math.floor(Math.random()*10000)
-    this.host = host
+  constructor() {
+    this.id = this.generateId()
   }
 
-  addPlayer(player: Player) {
+  public addWatcher(socket: Socket) {
+    this.watchers.push(socket)
+  }
+
+  public addPlayer(player: Player) {
     if (this.players.length >= 2) {
       return
     }
@@ -20,7 +23,11 @@ export class Session {
     this.players.push(player)
   }
 
-  isReady(): boolean {
+  public isReady(): boolean {
     return this.players.filter(player => player.state !== PlayerState.JOINED).length === 2
+  }
+
+  private generateId(): number {
+    return parseInt(Math.ceil(Math.random() * Date.now()).toPrecision(4).toString().replace(".", ""))
   }
 }

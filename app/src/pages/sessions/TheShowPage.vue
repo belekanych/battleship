@@ -5,7 +5,6 @@
   import GameField from '@/components/sessions/fields/GameField.vue'
   import Invite from '@/components/sessions/show/Invite.vue'
   import Player from '@/models/Player'
-  import PlayerPayload from '@/models/PlayerPayload'
   import PlayerState from '@/components/sessions/show/PlayerState.vue'
   import PlayerType from '@/types/Player'
   import SessionType from '@/types/Session'
@@ -44,30 +43,12 @@
     sessionStore.session.id = +props.sessionId
   }
   function setupSockets() {
-    // Joined
-    socketStore.socket.on('joined', (player: PlayerType) => {
-      sessionStore.session.addPlayer(new Player(player))
-    })
-
-    // Setup
-    socketStore.socket.on('setup', (session: SessionType) => {
+    // Updated
+    socketStore.socket.on('updated', (session: SessionType) => {
       const players: PlayerType[] = session.players || []
 
-      players.forEach((item: PlayerType, index: number) => {
-        const player: Player = sessionStore.session.players[index]
-        player.setPayload(new PlayerPayload(item.payload))
-        player.setState(item.state)
-      })
-    })
-
-    // Guess
-    socketStore.socket.on('guess', (session) => {
-      const players: PlayerType[] = session.players || []
-
-      players.forEach((item: PlayerType, index: number) => {
-        const player: Player = sessionStore.session.players[index]
-        player.setPayload(new PlayerPayload(item.payload))
-        player.setState(item.state)
+      players.forEach((player: PlayerType, index: number) => {
+        sessionStore.session.players[index] = new Player(player)
       })
     })
   }
