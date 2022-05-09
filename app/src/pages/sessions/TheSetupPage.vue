@@ -24,6 +24,9 @@
   const player = computed<Player>(() => {
     return sessionStore.player
   })
+  const playerId = computed<number | null>(() => {
+    return sessionStore.playerId
+  })
   const field = computed<Field>(() => {
     return player.value.payload.field
   })
@@ -43,9 +46,13 @@
   }
   function setupSockets(): void {
     socketStore.socket.on('updated', (session: SessionType) => {
+      const playerPayload: PlayerPayload = player.value.payload
       const players: PlayerType[] = session.players || []
 
       players.forEach((playerData: PlayerType, index: number) => {
+        if (playerData.id === playerId.value) {
+          playerData.payload = playerPayload
+        }
         sessionStore.session.players[index] = new Player(playerData)
       })
 
