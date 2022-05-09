@@ -19,12 +19,32 @@ export class Session {
     this.watchers.push(socket)
   }
 
+  public removeWatcher(connectionId: string): void {
+    const index = this.watchers.findIndex(watcher => watcher.id === connectionId)
+
+    if (index === -1) {
+      return
+    }
+
+    this.watchers.splice(index, 1)
+  }
+
   public addPlayer(player: Player) {
     if (this.players.length >= 2) {
       return
     }
 
     this.players.push(player)
+  }
+
+  public removePlayer(player: Player) {
+    const index = this.players.findIndex(item => item.id === player.id)
+
+    if (index === -1) {
+      return
+    }
+
+    this.players.splice(index, 1)
   }
 
   public isReady(): boolean {

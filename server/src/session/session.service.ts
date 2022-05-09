@@ -57,7 +57,7 @@ export class SessionService {
     return session
   }
 
-  public guess(connectionId: string, row: number, col: number): Session {
+  public move(connectionId: string, row: number, col: number): Session {
     const session = this.findPlayerSession(connectionId)
     const playerIndex = this.findPlayerIndex(session, connectionId)
     const enemyIndex = playerIndex === 0 ? 1 : 0
@@ -70,6 +70,27 @@ export class SessionService {
     player.setState(PlayerState.WAITING)
 
     return session
+  }
+
+  public disconnect(connectionId: string): Session | null {
+    const session: Session | null = this.findWatcherSession(connectionId)
+
+    if (!session) {
+      return null
+    }
+
+    session.removeWatcher(connectionId)
+
+    const player: Player | null = session.players.find(player => player.connectionId === connectionId)
+    if (player) {
+      session.removePlayer(player)
+    }
+
+    return session
+  }
+
+  private findWatcherSession(connectionId: string): Session | null {
+    return this.sessions.find(session => session.watchers.find(watcher => watcher.id === connectionId))
   }
 
   private findPlayerSession(connectionId: string): Session {

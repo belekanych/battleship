@@ -1,4 +1,10 @@
-import { ConnectedSocket, MessageBody, SubscribeMessage, WebSocketGateway } from '@nestjs/websockets'
+import {
+  ConnectedSocket,
+  MessageBody,
+  OnGatewayDisconnect,
+  SubscribeMessage,
+  WebSocketGateway
+} from '@nestjs/websockets'
 import { Socket } from 'socket.io'
 import { SessionService } from './session.service'
 import { Session } from './entities/session.entity'
@@ -8,7 +14,7 @@ import SessionResource from './resources/session.resource'
 import Cell from './enums/cell.enum'
 
 @WebSocketGateway({ cors: true })
-export class SessionGateway {
+export class SessionGateway implements OnGatewayDisconnect {
   constructor(private readonly sessionService: SessionService) {}
 
   @SubscribeMessage('create')
@@ -41,34 +47,36 @@ export class SessionGateway {
 
     session.addWatcher(client)
 
-    this.notify(
-      session,
-      'updated',
-    )
+    this.notify(session, 'updated')
   }
 
   @SubscribeMessage('setup')
   setup(@ConnectedSocket() client: Socket, @MessageBody() field: Cell[][]): void {
     const session: Session = this.sessionService.setup(client.id, field)
 
-    this.notify(
-      session,
-      'updated',
-    )
+    this.notify(session, 'updated')
   }
 
   @SubscribeMessage('move')
-  guess(@ConnectedSocket() client: Socket, @MessageBody() data): void {
-    const session: Session = this.sessionService.guess(client.id, +data.row, +data.col)
+  move(@ConnectedSocket() client: Socket, @MessageBody() data): void {
+    const session: Session = this.sessionService.move(client.id, +data.row, +data.col)
 
-    this.notify(
-      session,
-      'updated',
-    )
+    this.notify(session, 'updated')
   }
 
-  private notify(session: Session, event: string): void
-  {
+  public handleDisconnect(client: Socket): void {
+    const session: Session | null = this.sessionService.disconnect(client.id)
+
+    if (!session) {
+      return
+    }
+
+    if (session.players.length < 2) {
+      this.notify(session, 'updated')
+    }
+  }
+
+  private notify(session: Session, event: string): void {
     const payload = new SessionResource(session).transform()
 
     session.watchers.forEach((socket: Socket) => {

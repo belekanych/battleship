@@ -48,6 +48,8 @@
     socketStore.socket.on('updated', (session: SessionType) => {
       const players: PlayerType[] = session.players || []
 
+      sessionStore.session.players = []
+
       players.forEach((player: PlayerType, index: number) => {
         sessionStore.session.players[index] = new Player(player)
       })
