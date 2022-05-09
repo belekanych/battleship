@@ -11,7 +11,11 @@ export class Session {
     this.id = this.generateId()
   }
 
-  public addWatcher(socket: Socket) {
+  public addWatcher(socket: Socket): void {
+    if (this.watchers.find(watcher => watcher.id === socket.id)) {
+      return
+    }
+
     this.watchers.push(socket)
   }
 

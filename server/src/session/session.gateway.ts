@@ -20,6 +20,15 @@ export class SessionGateway {
     return session.id
   }
 
+  @SubscribeMessage('view')
+  public view(@ConnectedSocket() client: Socket, @MessageBody() sessionId: number): void {
+    const session: Session = this.sessionService.find(+sessionId)
+
+    session.addWatcher(client)
+
+    client.emit('updated', new SessionResource(session).transform())
+  }
+
   @SubscribeMessage('join')
   join(@ConnectedSocket() client: Socket, @MessageBody() data: { sessionId: number, name: string }): void {
     const player: Player = this.sessionService.join(data.sessionId, {

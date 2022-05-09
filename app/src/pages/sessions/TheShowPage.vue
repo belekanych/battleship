@@ -21,6 +21,7 @@
   const props = defineProps<{
     sessionId: String
   }>()
+  const sessionId: number = +props.sessionId
 
   // Computed
   const defaultField = computed<Field>(() => {
@@ -40,7 +41,7 @@
 
   // Methods
   function setupStore() {
-    sessionStore.session.id = +props.sessionId
+    sessionStore.session.id = sessionId
   }
   function setupSockets() {
     // Updated
@@ -51,6 +52,8 @@
         sessionStore.session.players[index] = new Player(player)
       })
     })
+
+    socketStore.socket.emit('view', sessionId)
   }
 
   setupStore()
