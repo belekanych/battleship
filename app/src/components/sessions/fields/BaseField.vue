@@ -13,7 +13,7 @@
 
   // Methods
   function isShip(cell: Cell): boolean {
-    return cell === Cell.SHIP
+    return [Cell.S1, Cell.S2, Cell.S3, Cell.S4, Cell.S5].includes(cell)
   }
 
   function isMiss(cell: Cell): boolean {
