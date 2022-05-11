@@ -27,4 +27,16 @@ export class Player {
   public setState(state: PlayerState) {
     this.state = state
   }
+
+  public isLost(): boolean {
+    if (this.state === PlayerState.LOST) {
+      return true
+    }
+
+    if ([PlayerState.WAITING, PlayerState.MOVE].includes(this.state)) {
+      return this.payload.isLost()
+    }
+
+    return false
+  }
 }

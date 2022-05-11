@@ -76,6 +76,12 @@ export class SessionService {
     const player = session.players[playerIndex]
     player.setState(PlayerState.WAITING)
 
+    if (session.isCompleted()) {
+      session.players.forEach(player => {
+        player.setState(player.isLost() ? PlayerState.LOST : PlayerState.WON)
+      })
+    }
+
     return session
   }
 
@@ -96,7 +102,7 @@ export class SessionService {
     return session
   }
 
-  private findWatcherSession(connectionId: string): Session | null {
+  public findWatcherSession(connectionId: string): Session | null {
     return this.sessions.find(session => session.watchers.find(watcher => watcher.id === connectionId))
   }
 

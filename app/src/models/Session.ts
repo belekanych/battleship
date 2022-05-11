@@ -21,4 +21,10 @@ export default class Session {
         .length === 2
     )
   }
+
+  public isCompleted(): boolean {
+    return !!this.players.filter((player) => {
+      return [PlayerState.LOST, PlayerState.WON].includes(player.state)
+    }).length
+  }
 }

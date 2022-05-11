@@ -2,10 +2,10 @@
   import GameField from '@/components/sessions/fields/GameField.vue'
   import Player from '@/models/Player'
   import PlayerState from '@/enums/PlayerState'
+  import PlayerStateBadge from '@/components/sessions/play/PlayerStateBadge.vue'
   import PlayerType from '@/types/Player'
   import SessionType from '@/types/Session'
   import TheMainLayout from '@/layouts/TheMainLayout.vue'
-  import { computed } from 'vue'
   import { useSessionStore } from '@/store/session'
   import { useSocketStore } from '@/store/socket'
 
@@ -13,14 +13,15 @@
   const sessionStore = useSessionStore()
   const socketStore = useSocketStore()
 
-  // Computed
-  const isMoving = computed<boolean>(() => {
-    return sessionStore.enemy.state === PlayerState.WAITING
-  })
-
   // Methods
   function onCellUpdate(row: number, col: number): void {
-    if (sessionStore.enemy.state === PlayerState.MOVE) {
+    const forbiddenStates = [
+      PlayerState.MOVE,
+      PlayerState.LOST,
+      PlayerState.WON,
+    ]
+
+    if (forbiddenStates.includes(sessionStore.enemy.state)) {
       return
     }
 
@@ -48,16 +49,6 @@
       :field="sessionStore.enemy.payload.field"
       @cell-update="onCellUpdate"
     />
-    <div class="text-center">
-      <span
-        :class="{
-          'bg-green-500': isMoving,
-          'bg-gray-500': !isMoving,
-          'text-white rounded-full pb-1 px-4': true,
-        }"
-      >
-        {{ isMoving ? 'Your move' : "Your oponent's move" }}
-      </span>
-    </div>
+    <player-state-badge :player="sessionStore.player" />
   </the-main-layout>
 </template>

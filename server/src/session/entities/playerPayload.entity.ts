@@ -7,6 +7,24 @@ export class PlayerPayload {
     this.field = this.generate(10)
   }
 
+  /**
+   * True if all ships are destroyed.
+   * False if at least one ship is alive.
+   *
+   * @returns boolean
+   */
+  public isLost(): boolean {
+    for (const row of this.field) {
+      for (const cell of row) {
+        if (cell >= Cell.S1 && cell <= Cell.S5) {
+          return false
+        }
+      }
+    }
+    
+    return true
+  }
+
   private generate(size: number): Cell[][] {
     const field: Cell[][] = [];
 

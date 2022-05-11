@@ -3,6 +3,8 @@ enum PlayerState {
   READY = 'ready',
   MOVE = 'move',
   WAITING = 'waiting',
+  LOST = 'lost',
+  WON = 'won',
 }
 
 export default PlayerState

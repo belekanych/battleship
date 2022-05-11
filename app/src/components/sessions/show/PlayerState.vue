@@ -22,6 +22,8 @@
       [PlayerState.READY]: 'is ready',
       [PlayerState.MOVE]: 'is moving',
       [PlayerState.WAITING]: 'is waiting',
+      [PlayerState.LOST]: 'has lost',
+      [PlayerState.WON]: 'has won!',
     }
 
     return `${player.value.user.name} ${states[player.value.state]}`
@@ -34,8 +36,10 @@
     const colors = {
       [PlayerState.JOINED]: 'bg-orange-500',
       [PlayerState.READY]: 'bg-blue-500',
-      [PlayerState.MOVE]: 'bg-green-500',
+      [PlayerState.MOVE]: 'bg-teal-500',
       [PlayerState.WAITING]: 'bg-gray-500',
+      [PlayerState.LOST]: 'bg-red-500',
+      [PlayerState.WON]: 'bg-green-500',
     }
 
     return colors[player.value.state]

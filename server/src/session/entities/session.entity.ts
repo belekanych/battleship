@@ -1,6 +1,7 @@
 import { Player } from './player.entity'
 import { Socket } from 'socket.io'
 import PlayerState from '../enums/playerstate.enum'
+import Cell from '../enums/cell.enum'
 
 export class Session {
   public id: number
@@ -49,6 +50,10 @@ export class Session {
 
   public isReady(): boolean {
     return this.players.filter(player => player.state !== PlayerState.JOINED).length === 2
+  }
+
+  public isCompleted(): boolean {
+    return !!this.players.filter(player => player.isLost()).length
   }
 
   private generateId(): number {
