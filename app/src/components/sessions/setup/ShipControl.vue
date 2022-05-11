@@ -29,8 +29,8 @@
         @change="$emit('update:modelValue', parseInt($event.target.value))"
       />
       <label
-        class="block cursor-pointer my-4 mx-2 py-2 px-4 border rounded hover:bg-gray-100 transition disabled:bg-gray-400"
-        :class="{ 'bg-gray-200': isChecked(key) }"
+        class="block cursor-pointer text-center my-4 mx-2 py-2 px-4 border rounded hover:bg-gray-100 transition disabled:bg-gray-400"
+        :class="{ 'border-gray-900': isChecked(key) }"
         :for="`ship${key}`"
       >
         {{ ship.name }} ({{ ship.length }})

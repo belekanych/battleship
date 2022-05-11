@@ -63,8 +63,15 @@ export class SessionService {
     const enemyIndex = playerIndex === 0 ? 1 : 0
 
     const enemy = session.players[enemyIndex]
-    enemy.payload.field[row][col] = enemy.payload.field[row][col] === Cell.SHIP ? Cell.HIT : Cell.MISS
     enemy.setState(PlayerState.MOVE)
+
+    const cell: Cell = enemy.payload.field[row][col]
+
+    if (cell >= Cell.S1 && cell <= Cell.S5) {
+      enemy.payload.field[row][col] = Cell.HIT
+    } else {
+      enemy.payload.field[row][col] = Cell.MISS
+    }
 
     const player = session.players[playerIndex]
     player.setState(PlayerState.WAITING)
