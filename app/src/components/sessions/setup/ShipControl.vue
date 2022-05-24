@@ -1,10 +1,12 @@
 <script setup lang="ts">
   import Cell from '@/enums/Cell'
+  import Field from '@/types/Field'
 
   // Props
   const props = defineProps<{
     modelValue: Cell
     ships: {}
+    field: Field
   }>()
 
   // Emits
@@ -13,6 +15,24 @@
   // Methods
   function isChecked(key: string): boolean {
     return parseInt(key) === props.modelValue
+  }
+  function getLength(key: string): number {
+    const shipId = parseInt(key)
+
+    let length = 0
+
+    props.field.forEach((row) => {
+      row.forEach((cell) => {
+        if (cell === shipId) {
+          length++
+        }
+      })
+    })
+
+    return length
+  }
+  function isFullyPlaced(key: string): boolean {
+    return props.ships[parseInt(key)].length === getLength(key)
   }
 </script>
 
@@ -29,11 +49,14 @@
         @change="$emit('update:modelValue', parseInt($event.target.value))"
       />
       <label
-        class="block cursor-pointer text-center my-4 mx-2 py-2 px-4 border rounded hover:bg-gray-100 transition disabled:bg-gray-400"
-        :class="{ 'border-gray-900': isChecked(key) }"
+        class="block w-44 cursor-pointer text-center my-4 mx-2 py-2 px-4 border rounded hover:bg-gray-100 transition disabled:bg-gray-400"
+        :class="{
+          'border-gray-900': isChecked(key),
+        }"
         :for="`ship${key}`"
       >
-        {{ ship.name }} ({{ ship.length }})
+        {{ ship.name }} ({{ getLength(key) }}/{{ ship.length }})
+        <span v-if="isFullyPlaced(key)">✔</span>
       </label>
     </div>
   </div>

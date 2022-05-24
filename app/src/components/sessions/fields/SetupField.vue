@@ -165,6 +165,6 @@
 <template>
   <div class="flex flex-col items-center">
     <base-field :field="field" @cell-click="onCellClick" />
-    <ship-control v-model="active" :ships="ships" />
+    <ship-control v-model="active" :ships="ships" :field="field" />
   </div>
 </template>
