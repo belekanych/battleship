@@ -114,10 +114,45 @@
 
     return false
   }
+  function canBeCleared(row: number, col: number): boolean {
+    const value = field[row][col]
+
+    // The cell is already empty
+    if (value === Cell.EMPTY) {
+      return false
+    }
+
+    // The cell contains another ship
+    if (value !== active.value) {
+      return false
+    }
+
+    // Do not allow to remove central parts
+    // Case 1: Vertical ships
+    if (
+      field[row - 1] &&
+      field[row - 1][col] === active.value &&
+      field[row + 1] &&
+      field[row + 1][col] === active.value
+    ) {
+      return false
+    }
+
+    // Do not allow to remove central parts
+    // Case 2: Horizontal ships
+    if (
+      field[row][col - 1] === active.value &&
+      field[row][col + 1] === active.value
+    ) {
+      return false
+    }
+
+    return true
+  }
   function onCellClick(row: number, col: number) {
     let value = field[row][col]
 
-    if (value === active.value) {
+    if (canBeCleared(row, col)) {
       value = Cell.EMPTY
     } else if (canBePlaced(row, col)) {
       value = active.value
