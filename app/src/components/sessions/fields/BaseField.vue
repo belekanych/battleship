@@ -1,6 +1,6 @@
 <script setup lang="ts">
-  import Cell from '../../../enums/Cell'
-  import Field from '../../../types/Field'
+  import Cell from '@/enums/Cell'
+  import Field from '@/models/Field'
 
   // Props
   interface Props {
@@ -38,31 +38,34 @@
     <tr>
       <td></td>
       <td
-        v-for="(row, rowIndex) in field"
+        v-for="(row, rowIndex) in field.rows"
         :key="rowIndex"
         class="text-center font-bold w-8 pb-2"
       >
         {{ String.fromCharCode('A'.charCodeAt(0) + rowIndex) }}
       </td>
     </tr>
-    <tr v-for="(row, rowIndex) in field" :key="rowIndex">
+    <tr v-for="(row, rowIndex) in field.rows" :key="rowIndex">
       <td class="text-right font-bold h-8 pr-4">
         <div>{{ rowIndex + 1 }}</div>
       </td>
       <td
         v-for="(cell, colIndex) in row"
         :key="colIndex"
-        :class="{ 'bg-gray-900 border-gray-900': isShip(cell) || isHit(cell) }"
+        :class="{
+          'bg-gray-900 border-gray-900': isShip(cell) || isHit(cell),
+          'bg-gray-300 border-gray-300': isDestroyed(cell),
+        }"
         class="border transition"
         @click="onCellClick(rowIndex, colIndex)"
       >
         <slot name="cell" :row="rowIndex" :col="colIndex" :cell="cell">
           <div
-            v-if="isMiss(cell) || isHit(cell)"
+            v-if="isMiss(cell) || isHit(cell) || isDestroyed(cell)"
             class="w-full h-full text-center"
             :class="{
               'text-gray-900': isMiss(cell),
-              'text-white': isHit(cell),
+              'text-white': isHit(cell) || isDestroyed(cell),
             }"
           >
             x

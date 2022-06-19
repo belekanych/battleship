@@ -1,7 +1,7 @@
 <script setup lang="ts">
   import BaseField from './BaseField.vue'
-  import Field from '../../../types/Field'
-  import Cell from '../../../enums/Cell'
+  import Field from '@/models/Field'
+  import Cell from '@/enums/Cell'
   import { computed } from 'vue'
 
   // Props
@@ -12,12 +12,12 @@
 
   // Computed
   const field = computed<Field>(() => {
-    const field: Field = [...props.field]
+    const field: Field = new Field({ rows: [...props.field.rows] })
 
-    field.forEach((row, rowIndex) => {
+    field.rows.forEach((row, rowIndex) => {
       row.forEach((cell, colIndex) => {
         if (cell >= Cell.S1 && cell <= Cell.S5) {
-          field[rowIndex][colIndex] = Cell.EMPTY
+          field.rows[rowIndex][colIndex] = Cell.EMPTY
         }
       })
     })
@@ -27,7 +27,7 @@
 
   // Methods
   function onCellClick(row: number, col: number): void {
-    if (field.value[row][col] !== Cell.EMPTY) {
+    if (field.value.rows[row][col] !== Cell.EMPTY) {
       return
     }
 

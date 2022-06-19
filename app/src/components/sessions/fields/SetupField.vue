@@ -2,7 +2,7 @@
   import BaseField from './BaseField.vue'
   import Cell from '@/enums/Cell'
   import Direction from '@/enums/Direction'
-  import Field from '@/types/Field'
+  import Field from '@/models/Field'
   import ShipControl from '../setup/ShipControl.vue'
   import type { Ref } from 'vue'
   import { ref } from 'vue'
@@ -49,7 +49,7 @@
   function getPlacedCount(ship: Cell): number {
     let count: number = 0
 
-    field.forEach((row) => {
+    field.rows.forEach((row) => {
       row.forEach((cell) => {
         if (cell === ship) {
           count++
@@ -60,7 +60,7 @@
     return count
   }
   function canBePlaced(row: number, col: number): boolean {
-    if (field[row][col] !== Cell.EMPTY) {
+    if (field.rows[row][col] !== Cell.EMPTY) {
       return false
     }
 
@@ -96,13 +96,13 @@
 
         if (
           !handle ||
-          field[rowIndex] === undefined ||
-          field[rowIndex][colIndex] === undefined
+          field.rows[rowIndex] === undefined ||
+          field.rows[rowIndex][colIndex] === undefined
         ) {
           break
         }
 
-        if (field[rowIndex][colIndex] === active.value) {
+        if (field.rows[rowIndex][colIndex] === active.value) {
           length++
         }
       }
@@ -115,7 +115,7 @@
     return false
   }
   function canBeCleared(row: number, col: number): boolean {
-    const value = field[row][col]
+    const value = field.rows[row][col]
 
     // The cell is already empty
     if (value === Cell.EMPTY) {
@@ -130,10 +130,10 @@
     // Do not allow to remove central parts
     // Case 1: Vertical ships
     if (
-      field[row - 1] &&
-      field[row - 1][col] === active.value &&
-      field[row + 1] &&
-      field[row + 1][col] === active.value
+      field.rows[row - 1] &&
+      field.rows[row - 1][col] === active.value &&
+      field.rows[row + 1] &&
+      field.rows[row + 1][col] === active.value
     ) {
       return false
     }
@@ -141,8 +141,8 @@
     // Do not allow to remove central parts
     // Case 2: Horizontal ships
     if (
-      field[row][col - 1] === active.value &&
-      field[row][col + 1] === active.value
+      field.rows[row][col - 1] === active.value &&
+      field.rows[row][col + 1] === active.value
     ) {
       return false
     }
@@ -150,7 +150,7 @@
     return true
   }
   function onCellClick(row: number, col: number) {
-    let value = field[row][col]
+    let value: Cell = field.rows[row][col]
 
     if (canBeCleared(row, col)) {
       value = Cell.EMPTY

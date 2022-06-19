@@ -46,7 +46,7 @@
 <template>
   <the-main-layout>
     <game-field
-      :field="sessionStore.enemy.payload.field"
+      :field="sessionStore.enemy.payload.hitMap"
       @cell-update="onCellUpdate"
     />
     <player-state-badge :player="sessionStore.player" />

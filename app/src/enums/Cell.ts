@@ -7,6 +7,7 @@ enum Cell {
   S5, // 2
   MISS,
   HIT,
+  DESTROYED,
 }
 
 export default Cell

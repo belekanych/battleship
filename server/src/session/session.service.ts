@@ -46,7 +46,7 @@ export class SessionService {
     const session = this.findPlayerSession(connectionId)
 
     const player = session.players[this.findPlayerIndex(session, connectionId)]
-    player.payload.field = field
+    player.payload.locationMap.rows = field
     player.setState(PlayerState.READY)
 
     if (session.isReady()) {
@@ -65,16 +65,20 @@ export class SessionService {
     const enemy = session.players[enemyIndex]
     enemy.setState(PlayerState.MOVE)
 
-    const cell: Cell = enemy.payload.field[row][col]
-
-    if (cell >= Cell.S1 && cell <= Cell.S5) {
-      enemy.payload.field[row][col] = Cell.HIT
-    } else {
-      enemy.payload.field[row][col] = Cell.MISS
-    }
-
     const player = session.players[playerIndex]
     player.setState(PlayerState.WAITING)
+
+    const cell: Cell = enemy.payload.locationMap.rows[row][col]
+
+    if (cell >= Cell.S1 && cell <= Cell.S5) {
+      enemy.payload.hitMap.rows[row][col] = Cell.HIT
+
+      if (enemy.payload.isAllHit(cell)) {
+        enemy.payload.setDestroyed(cell)
+      }
+    } else {
+      enemy.payload.hitMap.rows[row][col] = Cell.MISS
+    }
 
     if (session.isCompleted()) {
       session.players.forEach(player => {

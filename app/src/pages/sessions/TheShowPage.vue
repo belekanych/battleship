@@ -1,6 +1,6 @@
 <script setup lang="ts">
   import Cell from '@/enums/Cell'
-  import Field from '@/types/Field'
+  import Field from '@/models/Field'
   import FieldRow from '@/types/FieldRow'
   import GameField from '@/components/sessions/fields/GameField.vue'
   import Invite from '@/components/sessions/show/Invite.vue'
@@ -26,14 +26,14 @@
   // Computed
   const defaultField = computed<Field>(() => {
     const size = 10
-    const field: Field = []
+    const field: Field = new Field()
 
     for (let i: number = 0; i < size; i++) {
       const row: FieldRow = []
       for (let j: number = 0; j < size; j++) {
         row.push(Cell.EMPTY)
       }
-      field.push(row)
+      field.rows.push(row)
     }
 
     return field
@@ -69,7 +69,7 @@
       <div v-for="index in 2" :key="index" class="relative">
         <game-field
           :field="
-            sessionStore.session.players[index - 1]?.payload.field ||
+            sessionStore.session.players[index - 1]?.payload.hitMap ||
             defaultField
           "
         />

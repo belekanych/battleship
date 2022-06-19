@@ -1,6 +1,6 @@
 <script setup lang="ts">
   import Cell from '@/enums/Cell'
-  import Field from '@/types/Field'
+  import Field from '@/models/Field'
 
   // Props
   const props = defineProps<{
@@ -21,7 +21,7 @@
 
     let length = 0
 
-    props.field.forEach((row) => {
+    props.field.rows.forEach((row) => {
       row.forEach((cell) => {
         if (cell === shipId) {
           length++

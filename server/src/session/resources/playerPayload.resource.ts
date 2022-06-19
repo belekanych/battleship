@@ -1,3 +1,4 @@
+import Field from './field.resource'
 import { PlayerPayload } from '../entities/playerPayload.entity'
 
 export default class PlayerResource {
@@ -9,7 +10,8 @@ export default class PlayerResource {
 
   public transform(): Object {
     return {
-      field: this.resource.field,
+      locationMap: new Field(this.resource.locationMap).transform(),
+      hitMap: new Field(this.resource.hitMap).transform(),
     }
   }
 }

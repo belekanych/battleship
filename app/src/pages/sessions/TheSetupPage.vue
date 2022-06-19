@@ -1,6 +1,6 @@
 <script setup lang="ts">
   import Cell from '@/enums/Cell'
-  import Field from '@/types/Field'
+  import Field from '@/models/Field'
   import Player from '@/models/Player'
   import PlayerPayload from '@/models/PlayerPayload'
   import PlayerState from '@/enums/PlayerState'
@@ -28,7 +28,7 @@
     return sessionStore.playerId
   })
   const field = computed<Field>(() => {
-    return player.value.payload.field
+    return player.value.payload.locationMap
   })
   const disabled = computed<boolean>(() => {
     return player.value.state === PlayerState.READY
@@ -39,10 +39,10 @@
 
   // Methods
   function onCellUpdate(rowIndex: number, colIndex: number, value: Cell): void {
-    sessionStore.player.payload.field[rowIndex][colIndex] = value
+    sessionStore.player.payload.locationMap.rows[rowIndex][colIndex] = value
   }
   function onSubmit(): void {
-    socketStore.socket.emit('setup', field.value)
+    socketStore.socket.emit('setup', field.value.rows)
   }
   function setupSockets(): void {
     socketStore.socket.on('updated', (session: SessionType) => {
@@ -50,8 +50,10 @@
       const players: PlayerType[] = session.players || []
 
       players.forEach((playerData: PlayerType, index: number) => {
+        // Current user's payload should be ignored if other player's data is updated
         if (playerData.id === playerId.value) {
-          playerData.payload = playerPayload
+          playerData.payload.locationMap.rows = playerPayload.locationMap.rows
+          playerData.payload.hitMap.rows = playerPayload.hitMap.rows
         }
         sessionStore.session.players[index] = new Player(playerData)
       })
