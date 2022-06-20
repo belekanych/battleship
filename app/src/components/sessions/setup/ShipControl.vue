@@ -49,9 +49,9 @@
         @change="$emit('update:modelValue', parseInt($event.target.value))"
       />
       <label
-        class="block w-44 cursor-pointer text-center my-4 mx-2 py-2 px-4 border rounded hover:bg-gray-100 transition disabled:bg-gray-400"
+        class="block w-44 cursor-pointer text-center my-4 mx-2 py-2 px-4 border rounded bg-white text-blue-900 hover:bg-gray-100 transition disabled:bg-gray-300"
         :class="{
-          'border-gray-900': isChecked(key),
+          'border-blue-900': isChecked(key),
         }"
         :for="`ship${key}`"
       >

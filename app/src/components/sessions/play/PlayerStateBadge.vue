@@ -9,14 +9,14 @@
   }>()
 
   // Computed
-  const background = computed<string>(() => {
+  const classes = computed<string>(() => {
     const colors = {
       [PlayerState.JOINED]: '',
       [PlayerState.READY]: '',
-      [PlayerState.MOVE]: 'bg-teal-500',
-      [PlayerState.WAITING]: 'bg-gray-500',
-      [PlayerState.LOST]: 'bg-red-500',
-      [PlayerState.WON]: 'bg-green-500',
+      [PlayerState.MOVE]: 'bg-white text-blue-900',
+      [PlayerState.WAITING]: 'bg-blue-300 text-blue-900',
+      [PlayerState.LOST]: 'bg-red-500 text-white',
+      [PlayerState.WON]: 'bg-green-500 text-white',
     }
 
     return colors[props.player.state]
@@ -37,7 +37,7 @@
 
 <template>
   <div class="text-center">
-    <span :class="`${background} text-white rounded-full pb-1 px-4`">
+    <span :class="`${classes} rounded-full pb-1 px-4`">
       {{ label }}
     </span>
   </div>

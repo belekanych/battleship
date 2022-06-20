@@ -64,13 +64,14 @@
 
 <template>
   <the-main-layout>
-    Session: {{ sessionStore.session.id }}
+    <span class="text-white"> Session: {{ sessionStore.session.id }} </span>
     <div class="flex">
       <div v-for="index in 2" :key="index" class="relative">
         <game-field
           :field="
-            sessionStore.session.players[index - 1]?.payload.hitMap ||
-            defaultField
+            sessionStore.session.isReady()
+              ? sessionStore.session.players[index - 1]?.payload.hitMap
+              : defaultField
           "
         />
         <div

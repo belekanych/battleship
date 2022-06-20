@@ -72,7 +72,7 @@
     <setup-field :field="field" @cell-update="onCellUpdate" />
     <button
       type="button"
-      class="text-center bg-black text-white font-bold my-4 py-2 w-32 rounded-full hover:bg-blue-900 transition disabled:bg-gray-400"
+      class="text-center bg-white text-blue-900 font-bold my-4 py-2 w-32 rounded-full hover:bg-blue-100 transition disabled:bg-gray-300"
       :disabled="disabled"
       @click="onSubmit"
     >

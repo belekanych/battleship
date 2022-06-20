@@ -62,7 +62,7 @@
   <the-main-layout>
     <form class="flex flex-col items-center" @submit.prevent="onSubmit">
       <label class="flex flex-col mt-16">
-        <span> Your name: </span>
+        <span class="text-white">Your name:</span>
         <input
           v-model="name"
           type="text"
@@ -73,7 +73,7 @@
       <button
         :disabled="!isValid"
         type="submit"
-        class="text-center bg-black text-white font-bold my-4 py-2 w-32 rounded-full hover:bg-blue-900 transition disabled:bg-gray-400"
+        class="text-center bg-white text-blue-900 font-bold my-4 py-2 w-32 rounded-full hover:bg-blue-100 transition disabled:bg-gray-300"
       >
         Join
       </button>

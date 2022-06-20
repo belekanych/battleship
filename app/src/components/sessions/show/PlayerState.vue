@@ -28,18 +28,18 @@
 
     return `${player.value.user.name} ${states[player.value.state]}`
   })
-  const background = computed<string>(() => {
+  const classes = computed<string>(() => {
     if (!player.value) {
       return ''
     }
 
     const colors = {
-      [PlayerState.JOINED]: 'bg-orange-500',
-      [PlayerState.READY]: 'bg-blue-500',
-      [PlayerState.MOVE]: 'bg-teal-500',
-      [PlayerState.WAITING]: 'bg-gray-500',
-      [PlayerState.LOST]: 'bg-red-500',
-      [PlayerState.WON]: 'bg-green-500',
+      [PlayerState.JOINED]: 'bg-blue-300 text-blue-900',
+      [PlayerState.READY]: 'bg-white text-blue-900',
+      [PlayerState.MOVE]: 'bg-white text-blue-900',
+      [PlayerState.WAITING]: 'bg-blue-300 text-blue-900',
+      [PlayerState.LOST]: 'bg-red-500 text-white',
+      [PlayerState.WON]: 'bg-green-500 text-white',
     }
 
     return colors[player.value.state]
@@ -48,7 +48,7 @@
 
 <template>
   <div class="text-center">
-    <span :class="`${background} text-white rounded-full pb-1 px-4 transition`">
+    <span :class="`${classes} rounded-full pb-1 px-4 transition`">
       {{ label }}
     </span>
   </div>
