@@ -20,7 +20,7 @@ export class PlayerPayload {
    */
   public isLost(): boolean {
     const ships = this.locationMap.getAmount(cell => cell >= Cell.S1 && cell <= Cell.S5)
-    const destroyed = this.hitMap.getAmount(cell => cell === Cell.DESTROYED)
+    const destroyed = this.hitMap.getAmount(cell => [Cell.HIT, Cell.DESTROYED].includes(cell))
 
     if (!ships) {
       return false
@@ -41,7 +41,7 @@ export class PlayerPayload {
 
       for (let colIndex = 0; colIndex < row.length; colIndex++) {
         const isShip = this.locationMap.rows[rowIndex][colIndex] === ship
-        const isHit = this.hitMap.rows[rowIndex][colIndex] === Cell.HIT
+        const isHit = [Cell.HIT, Cell.DESTROYED].includes(this.hitMap.rows[rowIndex][colIndex])
         
         if (isShip && !isHit) {
           return false
