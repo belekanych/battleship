@@ -1,4 +1,5 @@
-import TheCreatePage from '@/pages/sessions/TheCreatePage.vue'
+import TheCreateBotPage from '@/pages/sessions/TheCreateBotPage.vue'
+import TheCreateFriendPage from '@/pages/sessions/TheCreateFriendPage.vue'
 import TheJoinPage from '@/pages/sessions/TheJoinPage.vue'
 import ThePlayPage from '@/pages/sessions/ThePlayPage.vue'
 import TheSetupPage from '@/pages/sessions/TheSetupPage.vue'
@@ -6,9 +7,14 @@ import TheShowPage from '@/pages/sessions/TheShowPage.vue'
 
 export default [
   {
-    path: '/create',
-    name: 'create',
-    component: TheCreatePage,
+    path: '/create/bot',
+    name: 'create.bot',
+    component: TheCreateBotPage,
+  },
+  {
+    path: '/create/friend',
+    name: 'create.friend',
+    component: TheCreateFriendPage,
   },
   {
     path: '/:sessionId',
