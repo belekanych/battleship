@@ -5,24 +5,35 @@ import {
   SubscribeMessage,
   WebSocketGateway
 } from '@nestjs/websockets'
-import { Socket } from 'socket.io'
-import { SessionService } from './session.service'
-import { Session } from './entities/session.entity'
-import { Player } from './entities/player.entity'
+import Cell from './enums/cell.enum'
+import Difficulty from './enums/difficulty.enum'
+import Move from './types/move.type'
 import PlayerResource from './resources/player.resource'
 import SessionResource from './resources/session.resource'
-import Cell from './enums/cell.enum'
+import { Player } from './entities/player.entity'
+import { Session } from './entities/session.entity'
+import { SessionService } from './session.service'
+import { Socket } from 'socket.io'
 
 @WebSocketGateway({ cors: true })
 export class SessionGateway implements OnGatewayDisconnect {
   constructor(private readonly sessionService: SessionService) {}
 
-  @SubscribeMessage('create')
-  create(@ConnectedSocket() client: Socket): number {
+  @SubscribeMessage('create.friend')
+  createFriend(@ConnectedSocket() client: Socket): number {
     const session: Session = this.sessionService.create()
 
     session.addWatcher(client)
     
+    return session.id
+  }
+
+  @SubscribeMessage('create.bot')
+  createBot(@MessageBody() difficulty: Difficulty): number {
+    const session: Session = this.sessionService.create()
+    
+    this.sessionService.addBot(session, +difficulty)
+
     return session.id
   }
 
@@ -55,13 +66,17 @@ export class SessionGateway implements OnGatewayDisconnect {
     const session: Session = this.sessionService.setup(client.id, field)
 
     this.notify(session, 'updated')
+
+    this.handleBot(session)
   }
 
   @SubscribeMessage('move')
-  move(@ConnectedSocket() client: Socket, @MessageBody() data): void {
-    const session: Session = this.sessionService.move(client.id, +data.row, +data.col)
+  move(@ConnectedSocket() client: Socket, @MessageBody() move: Move): void {
+    const session: Session = this.sessionService.move(client.id, +move.row, +move.col)
 
     this.notify(session, 'updated')
+
+    this.handleBot(session)
   }
 
   public handleDisconnect(client: Socket): void {
@@ -82,5 +97,14 @@ export class SessionGateway implements OnGatewayDisconnect {
     session.watchers.forEach((socket: Socket) => {
       socket.emit(event, payload)
     })
+  }
+
+  private handleBot(session: Session): void
+  {
+    setTimeout(() => {
+      this.sessionService.moveBot(session)
+
+      this.notify(session, 'updated')
+    }, 500)
   }
 }

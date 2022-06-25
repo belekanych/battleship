@@ -1,7 +1,9 @@
+import Move from '../types/move.type'
 import PlayerState from '../enums/playerstate.enum'
+import PlayerType from '../types/player.type'
+import { Field } from '../entities/field.entity'
 import { PlayerPayload } from './playerPayload.entity'
 import { User } from './user.entity'
-import PlayerType from '../types/player.type'
 
 export class Player {
   public connectionId: string
@@ -38,5 +40,12 @@ export class Player {
     }
 
     return false
+  }
+
+  public getNextMove(field: Field): Move {
+    return {
+      row: 0,
+      col: 0,
+    }
   }
 }

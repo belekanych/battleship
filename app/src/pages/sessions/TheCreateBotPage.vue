@@ -18,7 +18,7 @@
 
   // Methods
   function create(difficulty: number = Difficulty.EASY) {
-    socketStore.socket.emit('create', difficulty, (sessionId: number) => {
+    socketStore.socket.emit('create.bot', difficulty, (sessionId: number) => {
       router.push({ name: 'sessions.join', params: { sessionId } })
     })
   }

@@ -1,22 +1,122 @@
 import * as QRCode from 'qrcode'
 import Cell from './enums/cell.enum'
+import Difficulty from './enums/difficulty.enum'
 import PlayerState from './enums/playerstate.enum'
+import PlayerType from './types/player.type'
+import { BotInterface } from './bots/bot.interface'
+import { Easy } from './bots/easy.bot'
+import { Hard } from './bots/hard.bot'
 import { Injectable } from '@nestjs/common'
+import { Normal } from './bots/normal.bot'
 import { Player } from './entities/player.entity'
 import { Session } from './entities/session.entity'
 import { Socket } from 'socket.io'
-import PlayerType from './types/player.type'
+import { Base } from './bots/base.bot'
+import Move from './types/move.type'
 
 @Injectable()
 export class SessionService {
   private sessions: Session[] = []
 
-  public create() {
+  public create(): Session {
     const session = new Session()
 
     this.sessions.push(session)
 
     return session
+  }
+
+  public addBot(session: Session, difficulty: Difficulty): void {
+    let bot: BotInterface = null
+
+    const playerProps: PlayerType = {
+      name: 'Bot',
+      connectionId: 'bot' + Math.ceil(Math.random() * Date.now()).toPrecision(4).toString(),
+    }
+
+    switch (difficulty) {
+      case Difficulty.EASY:
+        bot = new Easy(playerProps)
+        break
+      case Difficulty.NORMAL:
+        bot = new Normal(playerProps)
+        break
+      case Difficulty.HARD:
+        bot = new Hard(playerProps)
+        break
+    }
+
+    session.addPlayer(bot)
+
+    const ships = [
+      {
+        cell: Cell.S1,
+        length: 5,
+      },
+      {
+        cell: Cell.S2,
+        length: 4,
+      },
+      {
+        cell: Cell.S3,
+        length: 3,
+      },
+      {
+        cell: Cell.S4,
+        length: 3,
+      },
+      {
+        cell: Cell.S5,
+        length: 2,
+      },
+    ]
+
+    for (let ship of ships) {
+      const length: number = ship.length
+
+      let rowStart: number = 0
+      let colStart: number = 0
+      let isGenerated: boolean = false
+
+      do {
+        rowStart = this.getRandom(bot.payload.locationMap.rows.length - length)
+        colStart = this.getRandom(bot.payload.locationMap.rows[rowStart].length - length)
+
+        const direction: boolean = this.getRandom(100) % 2 === 0
+        const directions: boolean[] = [direction, !direction]
+
+        for (let isHorizontal of directions) {
+          let hasConflict = false
+          for (let offset = 0; offset < length; offset++) {
+            const rowIndex = isHorizontal ? rowStart : rowStart + offset
+            const colIndex = isHorizontal ? colStart + offset : colStart
+
+            if (bot.payload.locationMap.rows[rowIndex][colIndex] !== Cell.EMPTY) {
+              hasConflict = true
+              break
+            }
+          }
+
+          if (hasConflict) {
+            continue
+          }
+
+          for (let offset = 0; offset < length; offset++) {
+            const rowIndex = isHorizontal ? rowStart : rowStart + offset
+            const colIndex = isHorizontal ? colStart + offset : colStart
+            bot.payload.locationMap.rows[rowIndex][colIndex] = ship.cell
+          }
+
+          isGenerated = true
+        }
+      } while (!isGenerated)
+    }
+
+    this.setup(playerProps.connectionId, bot.payload.locationMap.rows)
+  }
+
+  private getRandom(max: number): number {
+    return Math.floor(Math.random() * max)
   }
 
   public findAll() {
@@ -58,14 +158,12 @@ export class SessionService {
   }
 
   public move(connectionId: string, row: number, col: number): Session {
-    const session = this.findPlayerSession(connectionId)
-    const playerIndex = this.findPlayerIndex(session, connectionId)
-    const enemyIndex = playerIndex === 0 ? 1 : 0
+    const session: Session = this.findPlayerSession(connectionId)
 
-    const enemy = session.players[enemyIndex]
+    const enemy: Player = this.getEnemy(session, connectionId)
     enemy.setState(PlayerState.MOVE)
 
-    const player = session.players[playerIndex]
+    const player: Player = this.getPlayer(session, connectionId)
     player.setState(PlayerState.WAITING)
 
     const cell: Cell = enemy.payload.locationMap.rows[row][col]
@@ -89,6 +187,19 @@ export class SessionService {
     return session
   }
 
+  public moveBot(session: Session): void {
+    const bot: BotInterface = session.players.find(player => player instanceof Base)
+
+    if (!bot || !session.isReady()) {
+      return
+    }
+
+    const enemy: Player = this.getEnemy(session, bot.connectionId)
+    const move: Move = bot.getNextMove(enemy.payload.hitMap)
+
+    this.move(bot.connectionId, move.row, move.col)
+  }
+
   public disconnect(connectionId: string): Session | null {
     const session: Session | null = this.findWatcherSession(connectionId)
 
@@ -108,6 +219,16 @@ export class SessionService {
 
   public findWatcherSession(connectionId: string): Session | null {
     return this.sessions.find(session => session.watchers.find(watcher => watcher.id === connectionId))
+  }
+
+  private getPlayer(session: Session, connectionId: string): Player {
+    return session.players[this.findPlayerIndex(session, connectionId)]
+  }
+
+  private getEnemy(session: Session, connectionId: string): Player {
+    const playerIndex: number = this.findPlayerIndex(session, connectionId)
+
+    return session.players[playerIndex === 0 ? 1 : 0]
   }
 
   private findPlayerSession(connectionId: string): Session {

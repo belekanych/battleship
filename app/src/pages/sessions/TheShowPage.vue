@@ -80,7 +80,7 @@
         >
           <invite
             :session-id="sessionStore.session.id"
-            class="relative top-4 left-4 bg-white p-5"
+            class="p-5 bg-white relative top-1 left-4 ml-1"
           />
         </div>
         <player-state :player="sessionStore.session.players[index - 1]" />
