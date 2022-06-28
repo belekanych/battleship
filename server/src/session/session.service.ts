@@ -190,7 +190,7 @@ export class SessionService {
   public moveBot(session: Session): void {
     const bot: BotInterface = session.players.find(player => player instanceof Base)
 
-    if (!bot || !session.isReady()) {
+    if (!bot || bot.isLost() || !session.isReady()) {
       return
     }
 
