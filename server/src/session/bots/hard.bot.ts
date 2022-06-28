@@ -66,7 +66,7 @@ export class Hard extends Base implements BotInterface {
               const rowIndex = isHorizontal ? i : j + offset
               const colIndex = isHorizontal ? j + offset : i
 
-              probability.rows[rowIndex][colIndex + offset]++
+              probability.rows[rowIndex][colIndex]++
             }
           }
         }
