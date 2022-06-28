@@ -74,33 +74,29 @@ export class SessionService {
     for (let ship of ships) {
       const length: number = ship.length
 
+      let isHorizontal = true
       let rowStart: number = 0
       let colStart: number = 0
       let isGenerated: boolean = false
 
       do {
-        rowStart = this.getRandom(bot.payload.locationMap.rows.length - length)
-        colStart = this.getRandom(bot.payload.locationMap.rows[rowStart].length - length)
+        isHorizontal = this.getRandom(2) === 0
+        const size = bot.payload.locationMap.size()
+        rowStart = this.getRandom(isHorizontal ? size : size - length)
+        colStart = this.getRandom(isHorizontal ? size - length : size)
 
-        const direction: boolean = this.getRandom(100) % 2 === 0
-        const directions: boolean[] = [direction, !direction]
+        let hasConflict = false
+        for (let offset = 0; offset < length; offset++) {
+          const rowIndex = isHorizontal ? rowStart : rowStart + offset
+          const colIndex = isHorizontal ? colStart + offset : colStart
 
-        for (let isHorizontal of directions) {
-          let hasConflict = false
-          for (let offset = 0; offset < length; offset++) {
-            const rowIndex = isHorizontal ? rowStart : rowStart + offset
-            const colIndex = isHorizontal ? colStart + offset : colStart
-
-            if (bot.payload.locationMap.rows[rowIndex][colIndex] !== Cell.EMPTY) {
-              hasConflict = true
-              break
-            }
+          if (bot.payload.locationMap.rows[rowIndex][colIndex] !== Cell.EMPTY) {
+            hasConflict = true
+            break
           }
+        }
 
-          if (hasConflict) {
-            continue
-          }
-
+        if (!hasConflict) {
           for (let offset = 0; offset < length; offset++) {
             const rowIndex = isHorizontal ? rowStart : rowStart + offset
             const colIndex = isHorizontal ? colStart + offset : colStart
