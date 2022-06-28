@@ -21,6 +21,26 @@ export class Field {
     return amount
   }
 
+  public size(): number {
+    return this.rows.length
+  }
+
+  public get(row: number, col: number): Cell {
+    return this.rows[row][col]
+  }
+
+  public getRow(row: number): Cell[] {
+    return this.rows[row]
+  }
+
+  public forEach(handle: (cell: Cell, rowIndex: number|null, colIndex: number|null) => void): void {
+    this.rows.forEach((row, rowIndex) => {
+      row.forEach((cell, colIndex) => {
+        handle(cell, rowIndex, colIndex)
+      })
+    })
+  }
+
   private generate(size: number): Cell[][] {
     const field: Cell[][] = [];
 
