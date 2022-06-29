@@ -4,10 +4,15 @@
   import PlayerState from '@/enums/PlayerState'
   import PlayerStateBadge from '@/components/sessions/play/PlayerStateBadge.vue'
   import PlayerType from '@/types/Player'
+  import RetryGame from '@/components/sessions/play/RetryGame.vue'
   import SessionType from '@/types/Session'
   import TheMainLayout from '@/layouts/TheMainLayout.vue'
+  import { useRouter } from 'vue-router'
   import { useSessionStore } from '@/store/session'
   import { useSocketStore } from '@/store/socket'
+
+  // Router
+  const router = useRouter()
 
   // Store
   const sessionStore = useSessionStore()
@@ -38,6 +43,10 @@
         sessionStore.session.players[index] = new Player(playerData)
       })
     })
+
+    socketStore.socket.on('reset', () => {
+      router.push({ name: 'sessions.setup' })
+    })
   }
 
   setupSockets()
@@ -50,5 +59,8 @@
       @cell-update="onCellUpdate"
     />
     <player-state-badge :player="sessionStore.player" />
+    <div class="h-10">
+      <retry-game />
+    </div>
   </the-main-layout>
 </template>

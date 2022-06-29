@@ -39,6 +39,78 @@ export abstract class Base extends Player implements BotInterface {
     return this.saveMove(this.findNextHit(field))
   }
 
+  public reset(): void {
+    super.reset()
+
+    this.generateField()
+
+    this.previousMove = null
+    this.currentDirection = DEFAULT_DIRECTION
+    this.target = null
+  }
+
+  protected generateField(): void {
+    const ships = [
+      {
+        cell: Cell.S1,
+        length: 5,
+      },
+      {
+        cell: Cell.S2,
+        length: 4,
+      },
+      {
+        cell: Cell.S3,
+        length: 3,
+      },
+      {
+        cell: Cell.S4,
+        length: 3,
+      },
+      {
+        cell: Cell.S5,
+        length: 2,
+      },
+    ]
+
+    for (let ship of ships) {
+      const length: number = ship.length
+
+      let isHorizontal = true
+      let rowStart: number = 0
+      let colStart: number = 0
+      let isGenerated: boolean = false
+
+      do {
+        isHorizontal = this.getRandom(2) === 0
+        const size = this.payload.locationMap.size()
+        rowStart = this.getRandom(isHorizontal ? size : size - length)
+        colStart = this.getRandom(isHorizontal ? size - length : size)
+
+        let hasConflict = false
+        for (let offset = 0; offset < length; offset++) {
+          const rowIndex = isHorizontal ? rowStart : rowStart + offset
+          const colIndex = isHorizontal ? colStart + offset : colStart
+
+          if (this.payload.locationMap.rows[rowIndex][colIndex] !== Cell.EMPTY) {
+            hasConflict = true
+            break
+          }
+        }
+
+        if (!hasConflict) {
+          for (let offset = 0; offset < length; offset++) {
+            const rowIndex = isHorizontal ? rowStart : rowStart + offset
+            const colIndex = isHorizontal ? colStart + offset : colStart
+            this.payload.locationMap.rows[rowIndex][colIndex] = ship.cell
+          }
+
+          isGenerated = true
+        }
+      } while (!isGenerated)
+    }
+  }
+
   protected getSpecificMove(field: Field): Move {
     return this.getRandomMove(field)
   }

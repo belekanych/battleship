@@ -10,7 +10,6 @@ import { Injectable } from '@nestjs/common'
 import { Normal } from './bots/normal.bot'
 import { Player } from './entities/player.entity'
 import { Session } from './entities/session.entity'
-import { Socket } from 'socket.io'
 import { Base } from './bots/base.bot'
 import Move from './types/move.type'
 
@@ -47,66 +46,6 @@ export class SessionService {
     }
 
     session.addPlayer(bot)
-
-    const ships = [
-      {
-        cell: Cell.S1,
-        length: 5,
-      },
-      {
-        cell: Cell.S2,
-        length: 4,
-      },
-      {
-        cell: Cell.S3,
-        length: 3,
-      },
-      {
-        cell: Cell.S4,
-        length: 3,
-      },
-      {
-        cell: Cell.S5,
-        length: 2,
-      },
-    ]
-
-    for (let ship of ships) {
-      const length: number = ship.length
-
-      let isHorizontal = true
-      let rowStart: number = 0
-      let colStart: number = 0
-      let isGenerated: boolean = false
-
-      do {
-        isHorizontal = this.getRandom(2) === 0
-        const size = bot.payload.locationMap.size()
-        rowStart = this.getRandom(isHorizontal ? size : size - length)
-        colStart = this.getRandom(isHorizontal ? size - length : size)
-
-        let hasConflict = false
-        for (let offset = 0; offset < length; offset++) {
-          const rowIndex = isHorizontal ? rowStart : rowStart + offset
-          const colIndex = isHorizontal ? colStart + offset : colStart
-
-          if (bot.payload.locationMap.rows[rowIndex][colIndex] !== Cell.EMPTY) {
-            hasConflict = true
-            break
-          }
-        }
-
-        if (!hasConflict) {
-          for (let offset = 0; offset < length; offset++) {
-            const rowIndex = isHorizontal ? rowStart : rowStart + offset
-            const colIndex = isHorizontal ? colStart + offset : colStart
-            bot.payload.locationMap.rows[rowIndex][colIndex] = ship.cell
-          }
-
-          isGenerated = true
-        }
-      } while (!isGenerated)
-    }
 
     this.setup(playerProps.connectionId, bot.payload.locationMap.rows)
   }
@@ -213,8 +152,26 @@ export class SessionService {
     return session
   }
 
+  public retry(session: Session): void {
+    session.players.forEach((player: Player) => {
+      player.reset()
+    })
+
+    session.players.forEach((player: Player) => {
+      if (player instanceof Base) {
+        this.setup(player.connectionId, player.payload.locationMap.rows)
+      }
+    })
+  }
+
   public findWatcherSession(connectionId: string): Session | null {
     return this.sessions.find(session => session.watchers.find(watcher => watcher.id === connectionId))
+  }
+
+  public findPlayerSession(connectionId: string): Session {
+    return this.sessions.find(session => {
+      return this.findPlayerIndex(session, connectionId) !== -1
+    })
   }
 
   private getPlayer(session: Session, connectionId: string): Player {
@@ -225,12 +182,6 @@ export class SessionService {
     const playerIndex: number = this.findPlayerIndex(session, connectionId)
 
     return session.players[playerIndex === 0 ? 1 : 0]
-  }
-
-  private findPlayerSession(connectionId: string): Session {
-    return this.sessions.find(session => {
-      return this.findPlayerIndex(session, connectionId) !== -1
-    })
   }
 
   private findPlayerIndex(session: Session, connectionId: string): number {

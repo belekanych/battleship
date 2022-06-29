@@ -16,10 +16,9 @@ export class Player {
     this.connectionId = connectionId
     this.id = this.generateId()
 
-    this.payload = new PlayerPayload()
-    this.user = new User(name)
-
-    this.setState(PlayerState.JOINED)
+    this.user = new User(name)   
+    
+    this.reset()
   }
 
   private generateId(): number {
@@ -47,5 +46,10 @@ export class Player {
       row: 0,
       col: 0,
     }
+  }
+
+  public reset(): void {
+    this.payload = new PlayerPayload()
+    this.setState(PlayerState.JOINED)
   }
 }
