@@ -152,7 +152,7 @@ export class SessionService {
     return session
   }
 
-  public retry(session: Session): void {
+  public restart(session: Session): void {
     session.players.forEach((player: Player) => {
       player.reset()
     })

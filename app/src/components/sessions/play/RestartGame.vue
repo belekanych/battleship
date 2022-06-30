@@ -11,8 +11,8 @@
   const enabled = computed<boolean>(() => sessionStore.session.isCompleted())
 
   // Methods
-  function retry(): void {
-    socketStore.socket.emit('retry')
+  function restart(): void {
+    socketStore.socket.emit('restart')
   }
 </script>
 
@@ -21,8 +21,8 @@
     v-if="enabled"
     type="button"
     class="text-center bg-white text-blue-900 font-bold my-4 py-2 w-32 rounded-full hover:bg-blue-100 transition disabled:bg-gray-300"
-    @click="retry"
+    @click="restart"
   >
-    Retry
+    Restart
   </button>
 </template>

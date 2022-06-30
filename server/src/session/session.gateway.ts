@@ -79,14 +79,14 @@ export class SessionGateway implements OnGatewayDisconnect {
     this.handleBot(session)
   }
 
-  @SubscribeMessage('retry')
-  public retry(@ConnectedSocket() client: Socket): void {
+  @SubscribeMessage('restart')
+  public restart(@ConnectedSocket() client: Socket): void {
     const session: Session = this.sessionService.findPlayerSession(client.id)
 
-    this.sessionService.retry(session)
+    this.sessionService.restart(session)
 
     this.notify(session, 'updated')
-    this.notify(session, 'reset')
+    this.notify(session, 'restart')
   }
 
   public handleDisconnect(client: Socket): void {

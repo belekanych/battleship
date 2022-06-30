@@ -4,7 +4,7 @@
   import PlayerState from '@/enums/PlayerState'
   import PlayerStateBadge from '@/components/sessions/play/PlayerStateBadge.vue'
   import PlayerType from '@/types/Player'
-  import RetryGame from '@/components/sessions/play/RetryGame.vue'
+  import RestartGame from '@/components/sessions/play/RestartGame.vue'
   import SessionType from '@/types/Session'
   import TheMainLayout from '@/layouts/TheMainLayout.vue'
   import { useRouter } from 'vue-router'
@@ -44,7 +44,7 @@
       })
     })
 
-    socketStore.socket.on('reset', () => {
+    socketStore.socket.on('restart', () => {
       router.push({ name: 'sessions.setup' })
     })
   }
@@ -60,7 +60,7 @@
     />
     <player-state-badge :player="sessionStore.player" />
     <div class="h-10">
-      <retry-game />
+      <restart-game />
     </div>
   </the-main-layout>
 </template>
