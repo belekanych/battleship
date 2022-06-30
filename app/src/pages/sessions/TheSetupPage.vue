@@ -7,11 +7,21 @@
   import PlayerType from '@/types/Player'
   import SessionType from '@/types/Session'
   import SetupField from '@/components/sessions/fields/SetupField.vue'
+  import Ship from '@/models/Ship'
   import TheMainLayout from '@/layouts/TheMainLayout.vue'
   import { computed } from 'vue'
   import { useRouter } from 'vue-router'
   import { useSessionStore } from '../../store/session'
   import { useSocketStore } from '../../store/socket'
+
+  // Static data
+  const ships = [
+    new Ship(Cell.S1, 'Carrier', 5),
+    new Ship(Cell.S2, 'Battleship', 4),
+    new Ship(Cell.S3, 'Destroyer', 3),
+    new Ship(Cell.S4, 'Submarine', 3),
+    new Ship(Cell.S5, 'Patrol Boat', 2),
+  ]
 
   // Router
   const router = useRouter()
@@ -31,10 +41,15 @@
     return player.value.payload.locationMap
   })
   const disabled = computed<boolean>(() => {
-    return player.value.state === PlayerState.READY
+    const requiredShips = ships.reduce((sum, ship) => sum + ship.length, 0)
+    const selectedShips = sessionStore.player.payload.locationMap.rows.reduce((rowSum, row) => {
+      return rowSum + row.filter(cell => cell !== Cell.EMPTY).length
+    }, 0)
+
+    return requiredShips !== selectedShips
   })
   const btnText = computed<string>(() => {
-    return disabled.value ? 'Waiting...' : 'Start'
+    return player.value.state === PlayerState.READY ? 'Waiting...' : 'Start'
   })
 
   // Methods
@@ -69,7 +84,7 @@
 
 <template>
   <the-main-layout>
-    <setup-field :field="field" @cell-update="onCellUpdate" />
+    <setup-field :field="field" :ships="ships" @cell-update="onCellUpdate" />
     <button
       type="button"
       class="text-center bg-white text-blue-900 font-bold my-4 py-2 w-32 rounded-full hover:bg-blue-100 transition disabled:bg-gray-300"

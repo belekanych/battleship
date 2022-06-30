@@ -3,61 +3,29 @@
   import Cell from '@/enums/Cell'
   import Direction from '@/enums/Direction'
   import Field from '@/models/Field'
+  import Ship from '@/models/Ship'
   import ShipControl from '../setup/ShipControl.vue'
   import type { Ref } from 'vue'
   import { ref } from 'vue'
 
-  // Static data
-  const ships = {
-    [Cell.S1]: {
-      name: 'Carrier',
-      length: 5,
-    },
-    [Cell.S2]: {
-      name: 'Battleship',
-      length: 4,
-    },
-    [Cell.S3]: {
-      name: 'Destroyer',
-      length: 3,
-    },
-    [Cell.S4]: {
-      name: 'Submarine',
-      length: 3,
-    },
-    [Cell.S5]: {
-      name: 'Patrol Boat',
-      length: 2,
-    },
-  }
-
   // Props
   interface Props {
     field: Field
+    ships: Ship[]
   }
-  const { field } = defineProps<Props>()
+  const { field, ships } = defineProps<Props>()
 
   // Emits
   const emit = defineEmits(['cell-update'])
 
   // Data
-  const active: Ref<Cell.S1 | Cell.S2 | Cell.S3 | Cell.S4 | Cell.S5> = ref(
-    Cell.S1
-  )
+  const active: Ref<Ship> = ref(ships[0])
 
   // Methods
-  function getPlacedCount(ship: Cell): number {
-    let count: number = 0
-
-    field.rows.forEach((row) => {
-      row.forEach((cell) => {
-        if (cell === ship) {
-          count++
-        }
-      })
-    })
-
-    return count
+  function getPlacedCount(ship: Ship): number {
+    return field.rows.reduce((rowSum, row) => {
+      return rowSum + row.filter(cell => cell === ship.cell).length
+    }, 0)
   }
   function canBePlaced(row: number, col: number): boolean {
     if (field.rows[row][col] !== Cell.EMPTY) {
@@ -72,7 +40,7 @@
     }
 
     // The ship is fully placed
-    if (placedCount === ships[active.value].length) {
+    if (placedCount === active.value.length) {
       return false
     }
 
@@ -102,7 +70,7 @@
           break
         }
 
-        if (field.rows[rowIndex][colIndex] === active.value) {
+        if (field.rows[rowIndex][colIndex] === active.value.cell) {
           length++
         }
       }
@@ -123,7 +91,7 @@
     }
 
     // The cell contains another ship
-    if (value !== active.value) {
+    if (value !== active.value.cell) {
       return false
     }
 
@@ -131,9 +99,9 @@
     // Case 1: Vertical ships
     if (
       field.rows[row - 1] &&
-      field.rows[row - 1][col] === active.value &&
+      field.rows[row - 1][col] === active.value.cell &&
       field.rows[row + 1] &&
-      field.rows[row + 1][col] === active.value
+      field.rows[row + 1][col] === active.value.cell
     ) {
       return false
     }
@@ -141,8 +109,8 @@
     // Do not allow to remove central parts
     // Case 2: Horizontal ships
     if (
-      field.rows[row][col - 1] === active.value &&
-      field.rows[row][col + 1] === active.value
+      field.rows[row][col - 1] === active.value.cell &&
+      field.rows[row][col + 1] === active.value.cell
     ) {
       return false
     }
@@ -155,7 +123,7 @@
     if (canBeCleared(row, col)) {
       value = Cell.EMPTY
     } else if (canBePlaced(row, col)) {
-      value = active.value
+      value = active.value.cell
     }
 
     emit('cell-update', row, col, value)

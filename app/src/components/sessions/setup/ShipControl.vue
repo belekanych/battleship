@@ -1,11 +1,12 @@
 <script setup lang="ts">
   import Cell from '@/enums/Cell'
   import Field from '@/models/Field'
+  import Ship from '@/models/Ship'
 
   // Props
   const props = defineProps<{
     modelValue: Cell
-    ships: {}
+    ships: Ship[]
     field: Field
   }>()
 
@@ -13,50 +14,43 @@
   const emit = defineEmits(['update:modelValue'])
 
   // Methods
-  function isChecked(key: string): boolean {
-    return parseInt(key) === props.modelValue
+  function isChecked(ship: Ship): boolean {
+    return ship.cell === props.modelValue
   }
-  function getLength(key: string): number {
-    const shipId = parseInt(key)
-
-    let length = 0
-
-    props.field.rows.forEach((row) => {
-      row.forEach((cell) => {
-        if (cell === shipId) {
-          length++
-        }
-      })
-    })
-
-    return length
+  function getLength(ship: Ship): number {
+    return props.field.rows.reduce((rowSum, row) => {
+      return rowSum + row.filter(cell => cell === ship.cell).length
+    }, 0)
   }
-  function isFullyPlaced(key: string): boolean {
-    return props.ships[parseInt(key)].length === getLength(key)
+  function isFullyPlaced(ship: Ship): boolean {
+    return ship.length === getLength(ship)
+  }
+  function find(cell: string): Ship {
+    return props.ships.filter(ship => ship.cell === parseInt(cell))[0]
   }
 </script>
 
 <template>
   <div class="grid grid-cols-2 lg:grid-cols-5">
-    <div v-for="(ship, key) in props.ships" :key="key">
+    <div v-for="ship in props.ships" :key="ship.cell">
       <input
         type="radio"
         name="ship"
         class="hidden"
-        :id="`ship${key}`"
-        :value="key"
-        :checked="isChecked(key)"
-        @change="$emit('update:modelValue', parseInt($event.target.value))"
+        :id="`ship${ship.cell}`"
+        :value="ship.cell"
+        :checked="isChecked(ship)"
+        @change="$emit('update:modelValue', find($event.target.value))"
       />
       <label
         class="block w-44 cursor-pointer text-center my-4 mx-2 py-2 px-4 border rounded bg-white text-blue-900 hover:bg-gray-100 transition disabled:bg-gray-300"
         :class="{
-          'border-blue-900': isChecked(key),
+          'border-blue-900': isChecked(ship),
         }"
-        :for="`ship${key}`"
+        :for="`ship${ship.cell}`"
       >
-        {{ ship.name }} ({{ getLength(key) }}/{{ ship.length }})
-        <span v-if="isFullyPlaced(key)">✔</span>
+        {{ ship.name }} ({{ getLength(ship) }}/{{ ship.length }})
+        <span v-if="isFullyPlaced(ship)">✔</span>
       </label>
     </div>
   </div>
