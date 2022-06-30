@@ -89,6 +89,11 @@ export class SessionGateway implements OnGatewayDisconnect {
     this.notify(session, 'restart')
   }
 
+  @SubscribeMessage('exit')
+  public exit(@ConnectedSocket() client: Socket): void {
+    this.handleDisconnect(client)
+  }
+
   public handleDisconnect(client: Socket): void {
     const session: Session | null = this.sessionService.disconnect(client.id)
 
@@ -97,7 +102,10 @@ export class SessionGateway implements OnGatewayDisconnect {
     }
 
     if (session.players.length < 2) {
+      this.sessionService.restart(session)
+
       this.notify(session, 'updated')
+      this.notify(session, 'restart')
     }
   }
 

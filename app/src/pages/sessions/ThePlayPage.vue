@@ -7,6 +7,7 @@
   import RestartGame from '@/components/sessions/play/RestartGame.vue'
   import SessionType from '@/types/Session'
   import TheMainLayout from '@/layouts/TheMainLayout.vue'
+  import { useBeforeUnload } from '@/composables/useBeforeUnload'
   import { useRouter } from 'vue-router'
   import { useSessionStore } from '@/store/session'
   import { useSocketStore } from '@/store/socket'
@@ -50,6 +51,14 @@
   }
 
   setupSockets()
+
+  // Composables
+  useBeforeUnload(
+    to => true,
+    to => {
+      socketStore.socket.emit(to.name === 'sessions.setup' ? 'restart' : 'exit')
+    }
+  )
 </script>
 
 <template>

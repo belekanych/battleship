@@ -10,6 +10,7 @@
   import Ship from '@/models/Ship'
   import TheMainLayout from '@/layouts/TheMainLayout.vue'
   import { computed } from 'vue'
+  import { useBeforeUnload } from '@/composables/useBeforeUnload'
   import { useRouter } from 'vue-router'
   import { useSessionStore } from '../../store/session'
   import { useSocketStore } from '../../store/socket'
@@ -80,6 +81,18 @@
   }
 
   setupSockets()
+  
+   // Composables
+  useBeforeUnload(
+    to => {
+      return to.name !== 'sessions.play'
+    },
+    to => {
+      if (to.name !== 'sessions.play') {
+        socketStore.socket.emit('exit')
+      }
+    }
+  )
 </script>
 
 <template>
