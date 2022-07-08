@@ -86,7 +86,6 @@ export class SessionGateway implements OnGatewayDisconnect {
     this.sessionService.restart(session)
 
     this.notify(session, 'updated')
-    this.notify(session, 'restart')
   }
 
   @SubscribeMessage('exit')
@@ -105,7 +104,6 @@ export class SessionGateway implements OnGatewayDisconnect {
       this.sessionService.restart(session)
 
       this.notify(session, 'updated')
-      this.notify(session, 'restart')
     }
   }
 

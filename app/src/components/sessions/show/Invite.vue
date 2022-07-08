@@ -18,7 +18,7 @@
   // Computed
   const inviteLink = computed<string>(() => {
     return router.resolve({
-      name: 'sessions.join',
+      name: 'sessions.play',
       params: { sessionId: props.sessionId },
     }).href
   })
