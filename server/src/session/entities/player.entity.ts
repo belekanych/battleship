@@ -50,6 +50,6 @@ export class Player {
 
   public reset(): void {
     this.payload = new PlayerPayload()
-    this.setState(PlayerState.JOINED)
+    this.setState(this.state === PlayerState.READY ? PlayerState.READY : PlayerState.JOINED)
   }
 }

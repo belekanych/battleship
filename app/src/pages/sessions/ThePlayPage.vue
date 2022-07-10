@@ -1,14 +1,16 @@
 <script setup lang="ts">
-  import JoinSession from '@/components/sessions/join/JoinSession.vue'
   import PlaySession from '@/components/sessions/play/PlaySession.vue'
-  import PlayerState from '@/enums/PlayerState'
   import Session from '@/models/Session'
   import SetupSession from '@/components/sessions/setup/SetupSession.vue'
   import TheMainLayout from '@/layouts/TheMainLayout.vue'
   import { computed } from 'vue'
   import { onBeforeUnmount } from 'vue'
+  import { useRouter } from 'vue-router'
   import { useSessionStore } from '@/store/session'
   import { useSocketStore } from '@/store/socket'
+
+  // Router
+  const router = useRouter()
 
   // Store
   const sessionStore = useSessionStore()
@@ -21,17 +23,11 @@
 
   // Computed
   const componentName = computed<string>(() => {
-    const state = sessionStore.player?.state
-
-    if (!state) {
-      return JoinSession
+    if (!sessionStore.session.id) {
+      return ''
     }
 
-    if ([PlayerState.JOINED, PlayerState.READY].includes(state)) {
-      return SetupSession
-    }
-
-    return PlaySession
+    return sessionStore.session.isReady() ? PlaySession : SetupSession
   })
 
   // Lifecycle hooks
@@ -41,11 +37,15 @@
   })
 
   // Methods
-  function initSession() {
-    sessionStore.session.id = +props.sessionId
+  function checkSession() {
+    const sessionId = +props.sessionId
+
+    if (sessionStore.session.id !== sessionId) {
+      router.push({ name: 'sessions.join', params: { sessionId } })
+    }
   }
 
-  initSession()
+  checkSession()
 </script>
 
 <template>
