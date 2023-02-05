@@ -9,13 +9,13 @@ export default defineConfig({
     host: true,
     proxy: {
       '/api': {
-        target: 'http://localhost:3001',
+        target: 'http://battleship-server:3001',
         changeOrigin: true,
         secure: false,
       },
       // Proxying websockets or socket.io
       '/socket.io': {
-        target: 'ws://localhost:3001',
+        target: 'ws://battleship-server:3001',
         ws: true,
       },
     },

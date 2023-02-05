@@ -1,0 +1,23 @@
+version: "3.4"
+services:
+  battleship-app:
+    container_name: battleship-app
+    image: node:lts
+    working_dir: /var/www/html/app/
+    entrypoint: /bin/bash
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./app/:/var/www/html/app
+    tty: true
+
+  battleship-server:
+    container_name: battleship-server
+    image: node:lts
+    working_dir: /var/www/html/app/
+    entrypoint: /bin/bash
+    ports:
+      - "3001:3001"
+    volumes:
+      - ./server/:/var/www/html/app
+    tty: true
